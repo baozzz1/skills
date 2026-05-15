@@ -42,18 +42,28 @@
   --surface-subtle:  color-mix(in oklch, var(--gray-100) 60%, var(--paper));
   --surface-pill:    color-mix(in oklch, var(--clay) 8%, var(--paper));
 
-  /* ---------- Code surface — its OWN family. Never reuse --slate. ------- */
-  --code-bg:        #1A1816;
-  --code-bg-soft:   #232120;
-  --code-border:    rgba(232, 230, 222, 0.10);
-  --code-fg:        #E8E6DE;
-  --code-fg-dim:    #B8B5AC;
-  --code-keyword:   #D9A6F0;
-  --code-string:    #C7D88F;
-  --code-number:    #F0B07A;
-  --code-builtin:   #82C4D6;
-  --code-comment:   #8C8B85;
-  --code-deco:      #F0C880;
+  /* ---------- Code surface — its OWN family. Never reuse --slate.
+   *
+   * Light mode: warm paper-tan (one step deeper than --paper / --ivory) so
+   *   editorial code blocks read as inset slabs without dropping a hard
+   *   black rectangle onto a cream page. Aligns with Shiki's `min-light`
+   *   theme tokens (dark text on light bg).
+   * Dark mode: paper-warm dark (#0E0D0B) — one step deeper than --ivory.
+   *
+   * Verify by toggling theme: code-bg should always be one step DEEPER
+   * than --paper, never inverted.
+   * ------------------------------------------------------------------- */
+  --code-bg:        #F2EFE6;
+  --code-bg-soft:   #F8F6EF;
+  --code-border:    rgba(20, 20, 19, 0.10);
+  --code-fg:        #2D2B27;
+  --code-fg-dim:    #5A574F;
+  --code-keyword:   #8B4F87;
+  --code-string:    #5F7C2F;
+  --code-number:    #B25B1E;
+  --code-builtin:   #2F6B8B;
+  --code-comment:   #898679;
+  --code-deco:      #A66200;
 
   /* ---------- Mermaid (driven by var() inside classDef) ----------------- */
   --mm-node-fill:    var(--paper);
@@ -132,7 +142,14 @@
     --code-bg:        #0E0D0B;
     --code-bg-soft:   #161412;
     --code-border:    rgba(232, 230, 222, 0.08);
-    /* code-fg + syntax tokens stay unchanged — they are calibrated for both modes */
+    --code-fg:        #E8E6DE;
+    --code-fg-dim:    #B8B5AC;
+    --code-keyword:   #D9A6F0;
+    --code-string:    #C7D88F;
+    --code-number:    #F0B07A;
+    --code-builtin:   #82C4D6;
+    --code-comment:   #8C8B85;
+    --code-deco:      #F0C880;
 
     --shadow-lift: 0 10px 30px rgba(0, 0, 0, 0.35);
   }
@@ -160,6 +177,14 @@
   --code-bg:      #0E0D0B;
   --code-bg-soft: #161412;
   --code-border:  rgba(232, 230, 222, 0.08);
+  --code-fg:      #E8E6DE;
+  --code-fg-dim:  #B8B5AC;
+  --code-keyword: #D9A6F0;
+  --code-string:  #C7D88F;
+  --code-number:  #F0B07A;
+  --code-builtin: #82C4D6;
+  --code-comment: #8C8B85;
+  --code-deco:    #F0C880;
 
   --shadow-lift: 0 10px 30px rgba(0, 0, 0, 0.35);
 }

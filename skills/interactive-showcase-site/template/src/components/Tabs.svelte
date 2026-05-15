@@ -74,35 +74,39 @@
     overflow: hidden;
     background: var(--paper);
   }
+  /* Tablist as an explicit segmented control: each tab is a paper pill on a
+     subtle tray, so the user immediately reads them as buttons. */
   .tablist {
     display: flex;
     flex-wrap: wrap;
-    gap: 0;
-    background: var(--gray-100);
-    border-bottom: 1px solid var(--gray-300);
-    padding: 4px;
+    gap: 6px;
+    padding: 8px 10px;
+    background: var(--surface-subtle);
+    border-bottom: 1.5px solid var(--gray-300);
   }
   .tab {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-width: 0;
-    padding: 8px 14px;
-    border: 1.5px solid transparent;
-    border-radius: 8px;
-    background: transparent;
+    padding: 7px 16px;
+    border: 1.5px solid var(--gray-300);
+    border-radius: var(--radius-pill);
+    background: var(--paper);
     color: var(--gray-700);
     font-family: var(--sans);
     font-size: 13.5px;
     font-weight: 500;
-    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
   }
   .tab:hover {
-    background: var(--paper);
-    border-color: var(--gray-300);
+    color: var(--slate);
+    border-color: var(--gray-500);
   }
   .tab.active {
-    background: var(--paper);
+    background: color-mix(in oklch, var(--clay) 14%, var(--paper));
     border-color: var(--clay);
     color: var(--slate);
+    box-shadow: 0 0 0 1px var(--clay);
   }
   .panel {
     padding: 18px 20px;
@@ -111,6 +115,6 @@
   .panel > :global(p):last-child  { margin-bottom: 0; }
 
   @media (max-width: 600px) {
-    .tab { flex-basis: 100%; }
+    .tab { flex: 1 1 100%; }
   }
 </style>

@@ -42,8 +42,24 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
-          cache-dependency-path: skills/interactive-showcase-site/template/pnpm-lock.yaml
+          # Intentionally NOT using `cache: pnpm` here — that integration calls
+          # `pnpm store path` before any install has run, and pnpm 10 returns
+          # a placeholder path that setup-node can't resolve (see error
+          # "Some specified paths were not resolved, unable to cache
+          # dependencies"). We cache the store explicitly below instead, per
+          # https://pnpm.io/continuous-integration#github-actions.
+
+      - name: Resolve pnpm store path
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('skills/interactive-showcase-site/template/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

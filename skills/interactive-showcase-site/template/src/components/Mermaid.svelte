@@ -109,6 +109,10 @@
       const open = (e: Event) => {
         e.stopPropagation();
         detail = nodes[key];
+        // mark this node as the active selection so styles can match the
+        // active Tab visual (clay ring on a clay-tinted fill).
+        svgEl.querySelectorAll('g.node.mm-selected').forEach((n) => n.classList.remove('mm-selected'));
+        g.classList.add('mm-selected');
       };
       g.addEventListener('click', open);
       g.addEventListener('keydown', (ev) => {
@@ -151,9 +155,12 @@
   {#if title}
     <div class="title">{title}</div>
   {/if}
-  <div class="canvas">
+  <div class="canvas" class:is-loading={pending} class:has-error={!!errorMsg}>
     {#if pending}
-      <div class="placeholder">{strings.mermaidRendering}</div>
+      <div class="placeholder" role="status" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>{strings.mermaidRendering}</span>
+      </div>
     {:else if errorMsg}
       <div class="error">{strings.mermaidFailedPrefix}{errorMsg}</div>
     {:else}
@@ -173,14 +180,16 @@
     </div>
   {/if}
 
-  <div class="node-detail" class:is-empty={!detail} aria-live="polite">
-    {#if detail}
-      <strong class="d-title">{detail.title}</strong>
-      <p class="d-body">{detail.body}</p>
-    {:else}
-      <em class="hint">{strings.mermaidHint}</em>
-    {/if}
-  </div>
+  {#if !pending && !errorMsg}
+    <div class="node-detail" class:is-empty={!detail} aria-live="polite">
+      {#if detail}
+        <strong class="d-title">{detail.title}</strong>
+        <p class="d-body">{detail.body}</p>
+      {:else}
+        <em class="hint">{strings.mermaidHint}</em>
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -204,6 +213,15 @@
     overflow-y: hidden;
     padding: 4px 0 8px;
   }
+  /* Reserve enough vertical room while mermaid loads so the section
+     does not visually collapse to a single line of placeholder text. */
+  .canvas.is-loading,
+  .canvas.has-error {
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
   .canvas :global(svg) {
     max-width: 100%;
     height: auto;
@@ -221,34 +239,82 @@
     filter: brightness(0.97);
     stroke-width: 2px;
   }
-  .canvas :global(g.node.mm-clickable:focus-visible) {
-    outline: 2px solid var(--clay);
-    outline-offset: 2px;
+  /* Suppress the platform default focus outline (blue on most browsers) so
+     it never lands on top of our clay accent. Express selection via the
+     node's own stroke + fill instead — same visual language as the active
+     Tab pill, so the "selected step" reading is consistent across the
+     Lifecycle / Mermaid / Tabs trio. */
+  .canvas :global(g.node.mm-clickable) {
+    outline: none;
   }
-  /* "hot" node accent — apply via CSS so it's theme-aware. Author marks the
-     node with `class <id> hot;` in the mermaid spec. */
+  .canvas :global(g.node.mm-clickable:focus-visible rect),
+  .canvas :global(g.node.mm-clickable:focus-visible polygon),
+  .canvas :global(g.node.mm-clickable:focus-visible ellipse),
+  .canvas :global(g.node.mm-clickable:focus-visible circle),
+  .canvas :global(g.node.mm-clickable:focus-visible path) {
+    stroke: var(--clay) !important;
+    stroke-width: 2px !important;
+  }
+  /* "hot" node accent — author-marked via `class <id> hot;`. Same accent
+     used for the runtime "mm-selected" class (set when the user clicks a
+     node) so the highlighted node and the user's current focus share one
+     visual language. */
   .canvas :global(g.node.hot rect),
   .canvas :global(g.node.hot polygon),
   .canvas :global(g.node.hot ellipse),
   .canvas :global(g.node.hot circle),
-  .canvas :global(g.node.hot path) {
+  .canvas :global(g.node.hot path),
+  .canvas :global(g.node.mm-selected rect),
+  .canvas :global(g.node.mm-selected polygon),
+  .canvas :global(g.node.mm-selected ellipse),
+  .canvas :global(g.node.mm-selected circle),
+  .canvas :global(g.node.mm-selected path) {
     fill: var(--mm-hot-fill) !important;
     stroke: var(--mm-hot-stroke) !important;
+    stroke-width: 2px !important;
   }
   .canvas :global(g.node.hot .nodeLabel),
   .canvas :global(g.node.hot foreignObject *),
-  .canvas :global(g.node.hot text) {
+  .canvas :global(g.node.hot text),
+  .canvas :global(g.node.mm-selected .nodeLabel),
+  .canvas :global(g.node.mm-selected foreignObject *),
+  .canvas :global(g.node.mm-selected text) {
     color: var(--mm-hot-text) !important;
     fill: var(--mm-hot-text) !important;
   }
   .placeholder, .error {
-    padding: 24px 0;
-    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 22px;
+    border-radius: var(--radius-row);
+    background: var(--surface-subtle);
+    border: 1px dashed var(--gray-300);
+    text-align: left;
     font-family: var(--mono);
     font-size: 12px;
     color: var(--gray-500);
   }
-  .error { color: var(--rust); }
+  .error {
+    color: var(--rust);
+    border-color: color-mix(in oklch, var(--rust) 35%, var(--gray-300));
+    background: color-mix(in oklch, var(--rust) 6%, var(--paper));
+  }
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid color-mix(in oklch, var(--gray-500) 35%, transparent);
+    border-top-color: var(--clay);
+    animation: mm-spin 0.8s linear infinite;
+  }
+  @keyframes mm-spin {
+    to { transform: rotate(360deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation: none; border-top-color: var(--gray-500); }
+  }
   .legend {
     display: flex;
     gap: 14px;

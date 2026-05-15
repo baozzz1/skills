@@ -121,6 +121,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    max-width: 100%;
     padding: 4px 10px;
     border-radius: 999px;
     border: 1px solid var(--gray-300);
@@ -128,6 +129,7 @@
     font-family: var(--sans);
     font-size: 12px;
     color: var(--gray-700);
+    overflow-wrap: anywhere;
   }
   .dot {
     width: 7px;
@@ -172,11 +174,13 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    max-width: 100%;
     color: var(--gray-500);
     font-size: 10.5px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     margin-bottom: 5px;
+    overflow-wrap: anywhere;
   }
   .summary-card h2 {
     font-family: var(--sans);
@@ -191,9 +195,13 @@
     font-size: 13px;
     line-height: 1.45;
     color: var(--gray-700);
+    overflow-wrap: anywhere;
   }
 
-  @media (max-width: 980px) {
+  /* Below 1440px the side-by-side hero crowds the fixed right-side TOC;
+     stack the summary below the copy so each side has room to breathe.
+     The 1920×1080 spec target still gets the dual-pane layout. */
+  @media (max-width: 1440px) {
     .page-hero.has-summary {
       display: block;
     }
@@ -203,6 +211,11 @@
   }
 
   @media (max-width: 640px) {
+    .title,
+    .lead {
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }
     .summary-grid {
       grid-template-columns: 1fr;
     }

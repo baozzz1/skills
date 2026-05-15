@@ -30,3 +30,24 @@ pnpm typecheck && pnpm build
 ```
 
 Expected non-blocking output: Astro/Zod deprecation hints from `astro check` and a Vite chunk-size warning from Mermaid.
+
+## Preview screenshots
+
+When refreshing `docs/preview/preview-{en,zh}.png` (or any screenshot that
+ships in the repo), serve the **built** template, not the dev server. The
+Astro dev toolbar floats at the bottom of every page in `astro dev` and
+must NOT appear in published previews.
+
+```shell
+cd skills/interactive-showcase-site/template
+pnpm build && pnpm preview     # http://127.0.0.1:4321/ — no dev toolbar
+```
+
+Other ways to guarantee the toolbar is hidden:
+
+- Toggle the eye icon in the toolbar UI ("Hide toolbar"), persists per origin.
+- Pass `--devToolbar=false` to `astro dev`, or set `devToolbar: { enabled: false }`
+  in `astro.config.mjs` for the screenshot session only — revert before commit.
+
+Take both `preview-en.png` and `preview-zh.png` at 1920×1080 (the spec
+target), with theme = light. Trim to the visible viewport; do not pad.

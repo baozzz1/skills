@@ -8,10 +8,10 @@ description: Scaffold an Astro + Svelte single-page interactive explainer site f
 A focused, opinionated playbook for scaffolding **buildable, deployable
 single-page documentation sites** that turn a project's README / docs / SDK
 reference into an editorial, interactive explainer — with click-to-explore
-Mermaid diagrams, autoplaying numbered lifecycles, scroll-spy section nav,
-light/dark theme toggle, EN/ZH language toggle, and a one-screen project
+Mermaid diagrams, autoplaying numbered lifecycles, fixed right-side scroll-spy
+TOC, light/dark theme toggle, EN/ZH language toggle, and a one-screen project
 summary. Every page ships **bilingual by default** (English + Simplified
-Chinese), switched live in the navbar without a reload.
+Chinese), switched live from the top bar without a reload.
 
 This is the **npm-project counterpart** to `interactive-html-artifact` (which
 shipped single-file `.html` artifacts and is now superseded by this skill).
@@ -56,12 +56,12 @@ Do **not** use this skill for:
 4. **MDX content imports only the sanctioned components** (see "Authoring API"
    below). No inline `<script>`. No new global components without explicitly
    widening the template (which is a skill-level change, not a per-project change).
-5. **First screen explains the project.** At 1920×1080, the sticky nav + page
-   hero + 3–5 project snapshot cards + the start of the first section must fit
-   without scrolling. The snapshot cards should cover what the project is, its
-   core modules / workflow, and why the reader should continue. Pages must still
-   degrade gracefully at smaller viewports (1280×800 / mobile), but 1920×1080 is
-   the spec target.
+5. **First screen explains the project.** At 1920×1080, the sticky top controls
+   + fixed right-side TOC + page hero + 3–5 project snapshot cards + the start
+   of the first section must fit without scrolling. The snapshot cards should
+   cover what the project is, its core modules / workflow, and why the reader
+   should continue. Pages must still degrade gracefully at smaller viewports
+   (1280×800 / mobile), but 1920×1080 is the spec target.
 6. **Reduced motion + dark mode + print are not optional.** All animations
    must wrap in `@media (prefers-reduced-motion: no-preference)`; theme-flip
    re-renders Mermaid; print hides nav / theme toggle / copy buttons.
@@ -109,7 +109,7 @@ skills/
             │   └── lang.svelte.ts      ← reactive lang store + setLang()
             ├── components/
             │   ├── Hero.svelte         ← page-level hero + project snapshot cards
-            │   ├── SectionNav.svelte   ← sticky top bar + scroll-spy (bilingual)
+            │   ├── SectionNav.svelte   ← top controls + right TOC scroll-spy
             │   ├── ThemeToggle.svelte  ← system / light / dark cycle
             │   ├── LangToggle.svelte   ← EN / 中 cycle (mirrors ThemeToggle)
             │   ├── Lifecycle.svelte    ← Pattern A: numbered steps + autoplay
@@ -231,7 +231,13 @@ When triggered:
    to reflect the project name in `siteTitleZh` / `siteTitleEn`, and fill
    both `heroPropsZh` and `heroPropsEn` (each with its own `title` / `lead` /
    `chips` / `summaryItems`). These are inline literals, intentionally not
-   extracted to config — keep them in one place.
+   extracted to config — keep them in one place. Also set `faviconLetter`
+   in the same file to the single English letter that best represents the
+   project (e.g. `'A'` for an Anthropic SDK, `'T'` for a tool named "Tars");
+   the layout renders it as a clay-accent inline SVG favicon. If the project
+   ships a real bitmap or vector mark, drop the file into `public/` and
+   pass `favicon={\`\${import.meta.env.BASE_URL}favicon.svg\`}` to
+   `<BaseLayout>` instead.
 
 9. **Verify.** Run `pnpm typecheck` and `pnpm build`. Both must exit 0. If
    typecheck warns about deprecated Zod hints (Astro 6 migration noise), that's
@@ -252,7 +258,9 @@ If the user asks to add / edit / reorder a section after the first delivery:
   `src/content/sections/zh/*.mdx` (always paired — never edit only one
   language), `src/components/*Diagram.svelte` (per-section custom viz
   islands), the page hero literals (`heroPropsEn`, `heroPropsZh`,
-  `siteTitleEn`, `siteTitleZh`) in `src/pages/index.astro`,
+  `siteTitleEn`, `siteTitleZh`, `faviconLetter`) in `src/pages/index.astro`,
+  `public/favicon.svg` (if the project ships a real mark — otherwise the
+  layout auto-renders a letter SVG and `public/` stays empty),
   `src/i18n/strings.ts` (only when adding a new UI string — fill BOTH `en`
   and `zh` keys; never delete an existing key).
 - **Treat as immutable** (template assets — only modify on explicit "upgrade
@@ -301,6 +309,14 @@ Hydration directives — use these and only these:
 | `CodeBlock` | `client:idle`    | copy button can wait until idle |
 | `Callout`   | (none — Astro)   | zero JS |
 | `Chip`      | (none — Astro)   | zero JS |
+
+Heading / table rules:
+- Body `##` and `###` headings are automatically scanned into the fixed
+  right-side TOC (and the compact mobile disclosure). Keep them short enough to
+  work as navigation labels.
+- Markdown tables are allowed for compact reference data. Prefer concise
+  headers and short cell text; wide tables intentionally scroll horizontally
+  inside the table surface, not at the page level.
 
 ### Pattern A — Numbered Interactive Lifecycle
 
@@ -464,21 +480,29 @@ Theme switching:
 3. Persistence: `localStorage.theme`, written by `ThemeToggle`, read by an
    inline script in `BaseLayout.astro` **before** first paint (no FOUC)
 
-Verify by toggling the system theme: code blocks should become **darker**
-in dark mode (not lighter). Page background is paper-warm; code surface is
-one step deeper than page in both modes.
+Verify by toggling the system theme: in both modes the code surface is
+**one step deeper** than the page surface (`--paper`), never inverted.
+In light mode the code slab is a warm paper-tan (`#F2EFE6`); in dark mode
+it darkens to `#0E0D0B`. Token colors (`--code-keyword` / `--code-string`
+/ etc.) are theme-aware and flip with `[data-theme]`. Shiki spans paint
+their tokens with `background-color: transparent` so the wrapper surface
+controls the slab uniformly — do not undo that override.
 
 ## Verification Checklist
 
 Run `pnpm typecheck && pnpm build` first — both must exit 0. Then walk
 through this list in the dev preview (~3 minutes):
 
-- [ ] At 1920×1080, the sticky nav, page hero, 3–5 snapshot cards, and the
-      start of the first section fit without scrolling — verify in **both
-      EN and ZH**. (Spec target; smaller viewports just need to degrade
-      gracefully.)
+- [ ] At 1920×1080, the sticky top controls, fixed right-side TOC, page hero,
+      3–5 snapshot cards, and the start of the first section fit without
+      scrolling — verify in **both EN and ZH**. (Spec target; smaller
+      viewports just need to degrade gracefully.)
 - [ ] Toggle the theme button through system / light / dark; code blocks
-      visibly **darken** in dark mode; the choice persists across reload.
+      visibly **darken** in dark mode (and lighten to paper-tan in light
+      mode); Shiki tokens never paint white "stickers" on top of the slab;
+      the choice persists across reload.
+- [ ] The favicon shows the configured letter on a clay tile (or the real
+      asset you dropped into `public/`); `faviconLetter` matches the topic.
 - [ ] Toggle the LangToggle button (EN ⇄ 中); every visible section, nav
       title, hero copy, callout label, copy-button label, lifecycle play /
       pause label, and mermaid placeholder swap to the new language; the
@@ -496,10 +520,12 @@ through this list in the dev preview (~3 minutes):
       flashes for ~1.4s then resets.
 - [ ] Tab switching preserves scroll position and changes only the active
       panel.
-- [ ] At 360px wide, no horizontal page scroll; only intentional code blocks
-      / mermaid scroll horizontally.
-- [ ] Sticky nav updates the active section as you scroll.
-- [ ] Mobile (≤820px): nav collapses to a "current section ▾" disclosure.
+- [ ] Markdown tables have visible headers, borders, row separation, and
+      readable contrast in light and dark mode.
+- [ ] At 360px wide, no horizontal page scroll; only intentional code blocks,
+      tables, and mermaid diagrams scroll horizontally.
+- [ ] The right-side TOC updates the active section / subsection as you scroll.
+- [ ] Mobile (≤1119px): nav collapses to a "current section ▾" disclosure.
 - [ ] FAQ-style `<details>` open/close with keyboard.
 - [ ] Print preview hides controls, keeps narrative; backgrounds become white.
 - [ ] No `<input type="checkbox">` in checklist content unless the user
