@@ -4,6 +4,17 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/Hero.svelte';
 import SectionNav from '@/components/SectionNav.svelte';
 
+// Side-effect imports so the Svelte CSS for components used via MDX
+// (Lifecycle / Mermaid / Tabs / CodeBlock) lands in the page's main CSS
+// bundle. Without these, Astro 6 + Svelte 5 emits an orphan CSS chunk
+// that no <link rel="stylesheet"> in the generated HTML references, and
+// the components render unstyled in production (dev mode works because
+// Vite injects scoped styles on the fly).
+import '@/components/Lifecycle.svelte';
+import '@/components/Mermaid.svelte';
+import '@/components/Tabs.svelte';
+import '@/components/CodeBlock.svelte';
+
 const all = await getCollection('sections');
 const byOrder = (a: typeof all[number], b: typeof all[number]) =>
   a.data.order - b.data.order;

@@ -303,6 +303,14 @@ import Callout   from '@/components/Callout.astro';
 import Chip      from '@/components/Chip.astro';
 ```
 
+**Only import what the section actually uses.** Unused Svelte imports are not
+free: Astro 6 + Svelte 5 currently emit their scoped CSS into a separate
+chunk that the page never `<link>`s, so the components used in the same MDX
+end up unstyled in production. The page entry (`src/pages/index.astro`)
+side-effect-imports every interactive component once so the styles always
+land in the main CSS bundle — keep that block in sync if you add a new
+Svelte component to the authoring API.
+
 Hydration directives — use these and only these:
 
 | Component | Directive | Reason |
