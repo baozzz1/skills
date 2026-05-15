@@ -2,7 +2,7 @@
 
 > Turn a README, SDK, or docs folder into a bilingual interactive single-page explainer site.
 
-[简体中文](README.zh.md)
+[简体中文](README.zh.md) · [Live preview ↗](https://baozzz1.github.io/skills/)
 
 ![Interactive Showcase Site preview — English first screen at 1920×1080](docs/preview/preview-en.png)
 

@@ -2,7 +2,7 @@
 
 > 把 README、SDK 或文档目录变成中英双语的可交互单页讲解站点。
 
-[English](README.md)
+[English](README.md) · [在线预览 ↗](https://baozzz1.github.io/skills/)
 
 ![Interactive Showcase Site 预览 — 中文首屏，1920×1080](docs/preview/preview-zh.png)
 
