@@ -25,6 +25,12 @@ const navItemsEn = sectionsEn.map((s) => ({
 const siteTitleZh = 'Interactive Showcase Site';
 const siteTitleEn = 'Interactive Showcase Site';
 
+// Favicon: drop a real asset at `public/favicon.svg` and switch to
+// `${import.meta.env.BASE_URL}favicon.svg`. Otherwise the layout auto-renders
+// a single-letter clay mark; override the letter here when the agent has a
+// better topic letter than the title's first ASCII char.
+const faviconLetter = 'I';
+
 const heroPropsZh = {
   eyebrow: 'INTERACTIVE EXPLAINER · TEMPLATE',
   title: '把项目 / SDK / 文档变成可交互站点',
@@ -104,7 +110,11 @@ const heroPropsEn = {
 };
 ---
 
-<BaseLayout title={siteTitleZh} description="Interactive single-page documentation explainer built with Astro 6 + Svelte 5.">
+<BaseLayout
+  title={siteTitleZh}
+  description="Interactive single-page documentation explainer built with Astro 6 + Svelte 5."
+  faviconLetter={faviconLetter}
+>
   <SectionNav
     client:load
     itemsZh={navItemsZh}

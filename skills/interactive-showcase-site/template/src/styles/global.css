@@ -144,6 +144,16 @@ main {
   padding-top: 0;
 }
 
+@media (min-width: 1120px) {
+  main.page-shell {
+    /* Reserve a generous gutter so the fixed right-side TOC never crowds
+       the hero summary panel. Gutter math: TOC width (236) + TOC right
+       offset (28) + breathing room (≈80). */
+    max-width: calc(var(--content-max) + 280px);
+    padding-right: 344px;
+  }
+}
+
 /* ============================================================================
  * Language visibility — show only the elements matching <html data-lang>.
  *
@@ -159,6 +169,7 @@ main {
 .section {
   padding: var(--section-pad-y) 0;
   border-top: 1px solid var(--gray-100);
+  scroll-margin-top: calc(var(--nav-h) + 18px);
 }
 
 /* Both languages render; the first section per language is marked with
@@ -200,6 +211,68 @@ main {
 .section-body { display: block; }
 .section-body > * + * { margin-top: 16px; }
 .section-body > h3 + * { margin-top: 8px; }
+.section-body h2,
+.section-body h3 {
+  scroll-margin-top: calc(var(--nav-h) + 18px);
+}
+
+/* ============================================================================
+ * Markdown tables
+ * ===========================================================================*/
+
+.section-body > table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border: var(--border);
+  border-radius: var(--radius-row);
+  border-spacing: 0;
+  background: var(--paper);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.section-body table thead {
+  background: var(--surface-subtle);
+}
+
+.section-body table th,
+.section-body table td {
+  min-width: 140px;
+  padding: 10px 14px;
+  border-right: 1px solid var(--gray-100);
+  border-bottom: 1px solid var(--gray-100);
+  text-align: left;
+  vertical-align: top;
+}
+
+.section-body table th:last-child,
+.section-body table td:last-child {
+  border-right: 0;
+}
+
+.section-body table tr:last-child td {
+  border-bottom: 0;
+}
+
+.section-body table th {
+  color: var(--slate);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.section-body table td {
+  color: var(--gray-700);
+}
+
+.section-body table tbody tr:nth-child(even) td {
+  background: color-mix(in oklch, var(--gray-100) 44%, transparent);
+}
+
+.section-body table tbody tr:hover td {
+  background: var(--surface-pill);
+}
 
 /* ============================================================================
  * Generic surfaces (panel / card)
@@ -237,7 +310,9 @@ main {
  * ===========================================================================*/
 
 pre.astro-code,
-pre.shiki {
+pre.shiki,
+.section-body pre:not(.astro-code):not(.shiki),
+.tabs-wrap pre:not(.astro-code):not(.shiki) {
   background: var(--code-bg) !important;
   color: var(--code-fg);
   border: 1px solid var(--code-border);
@@ -248,6 +323,17 @@ pre.shiki {
   font-family: var(--mono);
   font-size: 13.5px;
   line-height: 1.6;
+}
+
+/* Raw <pre><code> blocks (e.g. inside Tabs html strings) — inherit code
+   surface tokens so they match Shiki-highlighted blocks in light / dark
+   mode. Without this they fall back to user-agent default styling. */
+.section-body pre:not(.astro-code):not(.shiki) code,
+.tabs-wrap pre:not(.astro-code):not(.shiki) code {
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
 }
 
 pre.astro-code code,
@@ -263,11 +349,17 @@ pre.shiki code {
 
 pre.astro-code .line { display: inline-block; min-height: 1em; }
 
-/* default = light theme, switch to dark when [data-theme='dark'] OR system dark + no override */
+/* Shiki dual themes: switch per [data-theme] / system. Only token color +
+   font style are read from the theme; backgrounds are deliberately left to
+   the wrapper (--code-bg) so spans never paint a competing rectangle on
+   top of the surface. Without the explicit `background-color: transparent`,
+   Shiki's `min-light` theme paints each span with its own (different) bg
+   inside our overridden wrapper, producing the broken "white slabs on a
+   dark slab" look in light mode. */
 pre.astro-code,
 pre.astro-code span {
   color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
+  background-color: transparent;
   font-style: var(--shiki-light-font-style);
   font-weight: var(--shiki-light-font-weight);
   text-decoration: var(--shiki-light-text-decoration);
@@ -276,7 +368,7 @@ pre.astro-code span {
 [data-theme='dark'] pre.astro-code,
 [data-theme='dark'] pre.astro-code span {
   color: var(--shiki-dark);
-  background-color: var(--shiki-dark-bg);
+  background-color: transparent;
   font-style: var(--shiki-dark-font-style);
   font-weight: var(--shiki-dark-font-weight);
   text-decoration: var(--shiki-dark-text-decoration);
@@ -286,7 +378,7 @@ pre.astro-code span {
   :root:not([data-theme='light']) pre.astro-code,
   :root:not([data-theme='light']) pre.astro-code span {
     color: var(--shiki-dark);
-    background-color: var(--shiki-dark-bg);
+    background-color: transparent;
     font-style: var(--shiki-dark-font-style);
     font-weight: var(--shiki-dark-font-weight);
     text-decoration: var(--shiki-dark-text-decoration);
@@ -299,7 +391,7 @@ pre.astro-code span {
 
 @media print {
   :root { --ivory: #fff; --paper: #fff; }
-  .section-nav, .theme-toggle, .copy-btn, .lifecycle-controls { display: none !important; }
+  .section-nav, .section-toc, .theme-toggle, .copy-btn, .lifecycle-controls { display: none !important; }
   body { background: #fff; color: #000; }
   pre.astro-code { background: #f5f5f5 !important; color: #000 !important; }
   .panel, .card { box-shadow: none !important; break-inside: avoid; }
