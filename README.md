@@ -18,10 +18,12 @@ The interaction model is inspired by technical explainers such as `ccunpacked.de
 
 ## Installation
 
+> Both commands accept either the GitHub shorthand `baozzz1/skills` or the full URL `https://github.com/baozzz1/skills`.
+
 Install through a Claude Code plugin marketplace:
 
 ```shell
-/plugin marketplace add <owner>/<repo>
+/plugin marketplace add baozzz1/skills
 /plugin install interactive-showcase-site@interactive-showcase-site-skills
 ```
 
@@ -34,11 +36,11 @@ Invoke it in Claude Code:
 Install through the Agent Skills CLI:
 
 ```shell
-npx skills add <owner>/<repo> --skill interactive-showcase-site
+npx skills add baozzz1/skills --skill interactive-showcase-site
 ```
 
 For a global skills install:
 
 ```shell
-npx skills add <owner>/<repo> --skill interactive-showcase-site -g
+npx skills add baozzz1/skills --skill interactive-showcase-site -g
 ```

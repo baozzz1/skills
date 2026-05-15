@@ -18,10 +18,12 @@
 
 ## 安装
 
+> 两条命令都接受 GitHub 简写 `baozzz1/skills` 或完整 URL `https://github.com/baozzz1/skills`。
+
 通过 Claude Code plugin marketplace 安装：
 
 ```shell
-/plugin marketplace add <owner>/<repo>
+/plugin marketplace add baozzz1/skills
 /plugin install interactive-showcase-site@interactive-showcase-site-skills
 ```
 
@@ -34,11 +36,11 @@
 通过 Agent Skills CLI 安装：
 
 ```shell
-npx skills add <owner>/<repo> --skill interactive-showcase-site
+npx skills add baozzz1/skills --skill interactive-showcase-site
 ```
 
 全局安装：
 
 ```shell
-npx skills add <owner>/<repo> --skill interactive-showcase-site -g
+npx skills add baozzz1/skills --skill interactive-showcase-site -g
 ```
