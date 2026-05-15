@@ -1,11 +1,16 @@
 <script lang="ts">
   /**
-   * Hero — page-level hero (eyebrow + h1 + lead + chips + optional snapshot).
+   * Hero — page-level hero (eyebrow + h1 + lead + chips + optional first-screen map).
    * NOT the per-section hero. The per-section hero is whatever interactive
    * island (Lifecycle / Mermaid / Tabs / plain prose) the section's MDX places
    * at the top of its body.
    *
    * Used once at the top of index.astro to introduce the whole site.
+   *
+   * The optional `summaryItems` render as an editorial first-screen map: a
+   * full-width hairline-separated list under the title block. No panel, no
+   * card grid — typography + 1px gray-300 separators only. Tone is collapsed
+   * to a 7px dot at the start of each row.
    */
   type Tone = 'clay' | 'olive' | 'rust' | 'info' | 'muted';
   type Chip = { label: string; tone?: Tone };
@@ -33,7 +38,7 @@
   }: Props = $props();
 </script>
 
-<header class="page-hero" class:has-summary={summaryItems.length > 0} id="top">
+<header class="page-hero" id="top">
   <div class="hero-copy">
     {#if eyebrow}<div class="eyebrow">{eyebrow}</div>{/if}
     <h1 class="title">{title}</h1>
@@ -51,33 +56,27 @@
   </div>
 
   {#if summaryItems.length}
-    <aside class="summary" aria-label={summaryTitle}>
+    <section class="summary" aria-label={summaryTitle}>
       <div class="summary-title mono">{summaryTitle}</div>
-      <div class="summary-grid">
+      <ol class="map-list">
         {#each summaryItems as item (item.label)}
-          <article class="summary-card" data-tone={item.tone ?? 'muted'}>
-            <div class="summary-label mono">
+          <li class="map-row">
+            <div class="map-num mono">
               <span class="dot" data-tone={item.tone ?? 'muted'}></span>
               {item.label}
             </div>
-            <h2>{item.title}</h2>
-            <p>{item.body}</p>
-          </article>
+            <h2 class="map-title">{item.title}</h2>
+            <p class="map-body">{item.body}</p>
+          </li>
         {/each}
-      </div>
-    </aside>
+      </ol>
+    </section>
   {/if}
 </header>
 
 <style>
   .page-hero {
     padding: var(--hero-pad-y) 0 28px;
-  }
-  .page-hero.has-summary {
-    display: grid;
-    grid-template-columns: minmax(0, 0.95fr) minmax(420px, 1.05fr);
-    gap: clamp(28px, 4vw, 58px);
-    align-items: center;
   }
   .hero-copy {
     min-width: 0;
@@ -136,77 +135,86 @@
     height: 7px;
     border-radius: 50%;
     background: var(--gray-500);
+    flex-shrink: 0;
   }
   .dot[data-tone='clay']  { background: var(--clay); }
   .dot[data-tone='olive'] { background: var(--olive); }
   .dot[data-tone='rust']  { background: var(--rust); }
   .dot[data-tone='info']  { background: var(--info); }
 
+  /* First-screen map — editorial, no panel, no cards.
+     Sits below the title block as part of the same vertical flow.
+     Tone signal collapsed to the 7px dot at the start of each row. */
   .summary {
-    background: var(--paper);
-    border: var(--border);
-    border-radius: var(--radius-panel);
-    padding: 16px;
+    margin-top: 32px;
   }
   .summary-title {
     color: var(--gray-500);
     font-size: 11px;
     letter-spacing: 0.08em;
-    margin-bottom: 10px;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gray-300);
   }
-  .summary-grid {
+  .map-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .map-row {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    grid-template-columns: minmax(180px, 0.22fr) minmax(0, 0.32fr) minmax(0, 1fr);
+    gap: clamp(16px, 2vw, 32px);
+    align-items: baseline;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--gray-300);
   }
-  .summary-card {
-    min-width: 0;
-    padding: 12px 13px;
-    border: 1.5px solid var(--gray-300);
-    border-radius: var(--radius-row);
-    background: var(--ivory);
+  .map-row:last-child {
+    border-bottom: 0;
   }
-  .summary-card[data-tone='clay']  { border-color: color-mix(in oklch, var(--clay) 38%, var(--gray-300)); }
-  .summary-card[data-tone='olive'] { border-color: color-mix(in oklch, var(--olive) 38%, var(--gray-300)); }
-  .summary-card[data-tone='rust']  { border-color: color-mix(in oklch, var(--rust) 38%, var(--gray-300)); }
-  .summary-card[data-tone='info']  { border-color: color-mix(in oklch, var(--info) 38%, var(--gray-300)); }
-  .summary-label {
+  .map-num {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    max-width: 100%;
+    gap: 8px;
     color: var(--gray-500);
-    font-size: 10.5px;
-    letter-spacing: 0.06em;
+    font-size: 11px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    margin-bottom: 5px;
     overflow-wrap: anywhere;
   }
-  .summary-card h2 {
+  .map-title {
     font-family: var(--sans);
-    font-size: 15px;
-    line-height: 1.25;
-    margin: 0 0 5px;
+    font-size: 16px;
+    line-height: 1.3;
     color: var(--slate);
-  }
-  .summary-card p {
-    max-width: none;
     margin: 0;
-    font-size: 13px;
-    line-height: 1.45;
+    font-weight: 600;
+  }
+  .map-body {
+    font-family: var(--serif);
+    font-size: 15px;
+    line-height: 1.5;
     color: var(--gray-700);
+    margin: 0;
+    max-width: 60ch;
     overflow-wrap: anywhere;
   }
 
-  /* Below 1440px the side-by-side hero crowds the fixed right-side TOC;
-     stack the summary below the copy so each side has room to breathe.
-     The 1920×1080 spec target still gets the dual-pane layout. */
-  @media (max-width: 1440px) {
-    .page-hero.has-summary {
+  /* Below 900px the three-column row crowds; stack each row vertically
+     while keeping the hairline separator language intact. No cards. */
+  @media (max-width: 900px) {
+    .map-row {
       display: block;
     }
-    .summary {
-      margin-top: 24px;
+    .map-num {
+      margin-bottom: 6px;
+    }
+    .map-title {
+      margin-bottom: 4px;
+    }
+    .map-body {
+      max-width: none;
     }
   }
 
@@ -215,9 +223,6 @@
     .lead {
       overflow-wrap: anywhere;
       word-break: normal;
-    }
-    .summary-grid {
-      grid-template-columns: 1fr;
     }
   }
 </style>

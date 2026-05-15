@@ -57,11 +57,14 @@ Do **not** use this skill for:
    below). No inline `<script>`. No new global components without explicitly
    widening the template (which is a skill-level change, not a per-project change).
 5. **First screen explains the project.** At 1920×1080, the sticky top controls
-   + fixed right-side TOC + page hero + 3–5 project snapshot cards + the start
-   of the first section must fit without scrolling. The snapshot cards should
-   cover what the project is, its core modules / workflow, and why the reader
-   should continue. Pages must still degrade gracefully at smaller viewports
-   (1280×800 / mobile), but 1920×1080 is the spec target.
+   + fixed right-side TOC + page hero + 3–5 first-screen map entries + the
+   start of the first section must fit without scrolling. The map entries
+   should cover what the project is, its core modules / workflow, and why the
+   reader should continue. They render as a full-width editorial list under
+   the title (hairline-separated rows, no panel, no cards) — never as a
+   side-by-side card grid next to the title. Pages must still degrade
+   gracefully at smaller viewports (1280×800 / mobile), but 1920×1080 is the
+   spec target.
 6. **Reduced motion + dark mode + print are not optional.** All animations
    must wrap in `@media (prefers-reduced-motion: no-preference)`; theme-flip
    re-renders Mermaid; print hides nav / theme toggle / copy buttons.
@@ -108,7 +111,7 @@ skills/
             │   ├── strings.ts          ← UI string dict (en + zh)
             │   └── lang.svelte.ts      ← reactive lang store + setLang()
             ├── components/
-            │   ├── Hero.svelte         ← page-level hero + project snapshot cards
+            │   ├── Hero.svelte         ← page-level hero + first-screen map list
             │   ├── SectionNav.svelte   ← top controls + right TOC scroll-spy
             │   ├── ThemeToggle.svelte  ← system / light / dark cycle
             │   ├── LangToggle.svelte   ← EN / 中 cycle (mirrors ThemeToggle)
@@ -187,8 +190,9 @@ When triggered:
    | 04 · guardrails | 使用约束 | 最容易误用或必须遵守的规则 | rust |
 
    Return this table before the section outline so the user can verify the
-   first-screen story. The facts should be short enough to fit inside the
-   `Hero` snapshot cards; do not use them as another long introduction.
+   first-screen story. Each fact should be short enough to fit as a one-line
+   entry in the first-screen map (a single `body` line under a 3–5 word
+   `title`); do not use them as another long introduction.
 
 4. **Draft a section outline (≤8 entries) and get user approval.** Use this
    shape and return it as a markdown table for the user to review:
@@ -494,9 +498,10 @@ Run `pnpm typecheck && pnpm build` first — both must exit 0. Then walk
 through this list in the dev preview (~3 minutes):
 
 - [ ] At 1920×1080, the sticky top controls, fixed right-side TOC, page hero,
-      3–5 snapshot cards, and the start of the first section fit without
-      scrolling — verify in **both EN and ZH**. (Spec target; smaller
-      viewports just need to degrade gracefully.)
+      3–5 first-screen map rows (full-width hairline list — never a side-by-
+      side card grid next to the title), and the start of the first section
+      fit without scrolling — verify in **both EN and ZH**. (Spec target;
+      smaller viewports just need to degrade gracefully.)
 - [ ] Toggle the theme button through system / light / dark; code blocks
       visibly **darken** in dark mode (and lighten to paper-tan in light
       mode); Shiki tokens never paint white "stickers" on top of the slab;
