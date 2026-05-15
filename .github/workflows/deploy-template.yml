@@ -1,0 +1,76 @@
+name: Deploy template preview to GitHub Pages
+
+# Builds skills/interactive-showcase-site/template/ and publishes the static
+# output to GitHub Pages so https://baozzz1.github.io/skills/ shows a live
+# preview of the scaffold. Triggered on push to main/develop when the
+# template (or this workflow) changes, and manually via workflow_dispatch.
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'skills/interactive-showcase-site/template/**'
+      - '.github/workflows/deploy-template.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one Pages deploy at a time; let in-progress runs finish (don't cancel).
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: skills/interactive-showcase-site/template
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: skills/interactive-showcase-site/template/pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+        env:
+          # Project page lives at /skills/; the template is built with this
+          # base so its CSS / JS / font URLs resolve correctly on Pages.
+          BASE_PATH: /skills/
+          SITE_URL: https://baozzz1.github.io
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: skills/interactive-showcase-site/template/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
