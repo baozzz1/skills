@@ -20,6 +20,3 @@ yarn-error.log*
 .idea/
 .vscode/*
 !.vscode/extensions.json
-
-# lock
-pnpm-lock.yaml

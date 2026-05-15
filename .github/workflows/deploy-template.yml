@@ -41,7 +41,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           # Intentionally NOT using `cache: pnpm` here — that integration calls
           # `pnpm store path` before any install has run, and pnpm 10 returns
           # a placeholder path that setup-node can't resolve (see error
