@@ -1,0 +1,160 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/Hero.svelte';
+import SectionNav from '@/components/SectionNav.svelte';
+
+const all = await getCollection('sections');
+const byOrder = (a: typeof all[number], b: typeof all[number]) =>
+  a.data.order - b.data.order;
+
+const sectionsZh = all.filter((s) => s.data.lang === 'zh').sort(byOrder);
+const sectionsEn = all.filter((s) => s.data.lang === 'en').sort(byOrder);
+
+// DOM ids must be unique per language. Hashes are language-prefixed
+// (`#zh-overview` / `#en-overview`) so SectionNav can target the visible copy.
+const navItemsZh = sectionsZh.map((s) => ({
+  id: `zh-${s.data.id}`,
+  title: s.data.title
+}));
+const navItemsEn = sectionsEn.map((s) => ({
+  id: `en-${s.data.id}`,
+  title: s.data.title
+}));
+
+const siteTitleZh = 'Interactive Showcase Site';
+const siteTitleEn = 'Interactive Showcase Site';
+
+const heroPropsZh = {
+  eyebrow: 'INTERACTIVE EXPLAINER · TEMPLATE',
+  title: '把项目 / SDK / 文档变成可交互站点',
+  lead: '首屏先讲项目全貌：它解决什么问题、由哪些核心模块组成、读者应该按什么路径继续看。长文 deep-dive 放在下方章节。',
+  chips: [
+    { label: 'Astro 6', tone: 'clay' as const },
+    { label: 'Svelte 5', tone: 'olive' as const },
+    { label: 'Shiki + Mermaid', tone: 'info' as const },
+    { label: '反 AI slop', tone: 'rust' as const }
+  ],
+  summaryTitle: 'FIRST-SCREEN MAP',
+  summaryItems: [
+    {
+      label: '01 · purpose',
+      title: '一句话定位',
+      body: '把 README / docs / SDK 说明压缩成可浏览、可点击、可演示的单页 explainer。',
+      tone: 'clay' as const
+    },
+    {
+      label: '02 · structure',
+      title: '3-8 个章节',
+      body: '用 hash 路由和 scroll-spy 保留整体上下文，避免多页跳转打断理解。',
+      tone: 'info' as const
+    },
+    {
+      label: '03 · interaction',
+      title: '三类主交互',
+      body: 'Lifecycle 讲流程，Mermaid 讲结构，Tabs 对比实现风格或平台差异。',
+      tone: 'olive' as const
+    },
+    {
+      label: '04 · guardrails',
+      title: '模板即约束',
+      body: '组件、tokens、字体、主题和验证命令固定，内容生成只填授权区域。',
+      tone: 'rust' as const
+    }
+  ]
+};
+
+const heroPropsEn = {
+  eyebrow: 'INTERACTIVE EXPLAINER · TEMPLATE',
+  title: 'Turn projects / SDKs / docs into interactive sites',
+  lead: 'The first screen tells the whole story: what the project solves, which core modules compose it, and the path a reader should follow. Long-form deep-dives live in the sections below.',
+  chips: [
+    { label: 'Astro 6', tone: 'clay' as const },
+    { label: 'Svelte 5', tone: 'olive' as const },
+    { label: 'Shiki + Mermaid', tone: 'info' as const },
+    { label: 'Anti AI-slop', tone: 'rust' as const }
+  ],
+  summaryTitle: 'FIRST-SCREEN MAP',
+  summaryItems: [
+    {
+      label: '01 · purpose',
+      title: 'One-line positioning',
+      body: 'Compress README / docs / SDK reference into a browseable, clickable, demo-able single-page explainer.',
+      tone: 'clay' as const
+    },
+    {
+      label: '02 · structure',
+      title: '3–8 sections',
+      body: 'Hash routes + scroll-spy preserve the whole context; avoid multi-page jumps that fragment understanding.',
+      tone: 'info' as const
+    },
+    {
+      label: '03 · interaction',
+      title: 'Three core patterns',
+      body: 'Lifecycle for flows, Mermaid for structure, Tabs for comparing variants or platforms.',
+      tone: 'olive' as const
+    },
+    {
+      label: '04 · guardrails',
+      title: 'Template is the contract',
+      body: 'Components, tokens, fonts, theme and verification commands are fixed; content generation only fills sanctioned slots.',
+      tone: 'rust' as const
+    }
+  ]
+};
+---
+
+<BaseLayout title={siteTitleZh} description="Interactive single-page documentation explainer built with Astro 6 + Svelte 5.">
+  <SectionNav
+    client:load
+    itemsZh={navItemsZh}
+    itemsEn={navItemsEn}
+    siteTitleZh={siteTitleZh}
+    siteTitleEn={siteTitleEn}
+  />
+
+  <main class="page-shell">
+    <div data-lang-only="zh" id="top-zh">
+      <Hero {...heroPropsZh} />
+    </div>
+    <div data-lang-only="en" id="top-en">
+      <Hero {...heroPropsEn} />
+    </div>
+
+    {sectionsZh.map(async (entry, i) => {
+      const { Content } = await render(entry);
+      return (
+        <section class="section" id={`zh-${entry.data.id}`} data-lang-only="zh" data-section-first={i === 0 ? '' : undefined}>
+          {entry.data.eyebrow && (
+            <div class="section-eyebrow">{entry.data.eyebrow}</div>
+          )}
+          <h2 class="section-title">{entry.data.title}</h2>
+          {entry.data.estimatedRead && (
+            <div class="section-meta">~{entry.data.estimatedRead} 分钟 · {entry.data.heroKind}</div>
+          )}
+          <div class="section-body">
+            <Content />
+          </div>
+        </section>
+      );
+    })}
+
+    {sectionsEn.map(async (entry, i) => {
+      const { Content } = await render(entry);
+      return (
+        <section class="section" id={`en-${entry.data.id}`} data-lang-only="en" data-section-first={i === 0 ? '' : undefined}>
+          {entry.data.eyebrow && (
+            <div class="section-eyebrow">{entry.data.eyebrow}</div>
+          )}
+          <h2 class="section-title">{entry.data.title}</h2>
+          {entry.data.estimatedRead && (
+            <div class="section-meta">~{entry.data.estimatedRead} min · {entry.data.heroKind}</div>
+          )}
+          <div class="section-body">
+            <Content />
+          </div>
+        </section>
+      );
+    })}
+  </main>
+</BaseLayout>

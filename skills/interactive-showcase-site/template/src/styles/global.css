@@ -1,0 +1,320 @@
+@import './tokens.css';
+
+/* ============================================================================
+ * Reset
+ * ===========================================================================*/
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--ivory);
+  color: var(--gray-700);
+  font-family: var(--sans);
+  font-size: 15.5px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  text-wrap: pretty;
+  overflow-x: clip;
+}
+
+img, svg { display: block; max-width: 100%; }
+a { color: var(--clay); text-decoration: none; border-bottom: 1px solid color-mix(in oklch, var(--clay) 35%, transparent); transition: border-color 0.15s ease; }
+a:hover { border-color: var(--clay); }
+
+button {
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--clay);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ============================================================================
+ * Typography hierarchy
+ *
+ * h1 / hero titles use the serif (editorial anchor); h2 / h3 / h4-h6 use the
+ * sans (docs-density), tracking the Mintlify-style hierarchy used at
+ * code.claude.com/docs while keeping our editorial stack.
+ * ===========================================================================*/
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  color: var(--slate);
+  margin: 0;
+  line-height: 1.18;
+  text-wrap: balance;
+}
+
+h1 {
+  font-family: var(--serif);
+  font-size: clamp(34px, 4.4vw, 50px);
+  line-height: 1.08;
+}
+
+/* h2 / h3 in sans for docs density. Section titles inherit this; per-component
+   titles (Hero) override locally as needed. */
+h2 {
+  font-family: var(--sans);
+  font-size: clamp(22px, 2.3vw, 26px);
+  line-height: 1.22;
+  letter-spacing: -0.005em;
+  margin: 40px 0 12px;
+}
+h3 {
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.28;
+  margin: 24px 0 8px;
+}
+
+p {
+  margin: 0 0 12px;
+  max-width: 70ch;
+}
+
+p + p { margin-top: 12px; }
+
+strong { color: var(--slate); font-weight: 600; }
+em     { color: var(--slate); font-style: italic; }
+
+code, .mono, .path, .metric {
+  font-family: var(--mono);
+  font-size: 0.92em;
+}
+
+/* Inline code: paper-warm pill, not the darker code-block surface */
+:not(pre) > code {
+  background: var(--gray-100);
+  color: var(--gray-700);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  font-size: 0.88em;
+}
+
+/* ============================================================================
+ * Eyebrow / chip / dot — small UI primitives shared across components
+ * ===========================================================================*/
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  display: inline-block;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================================
+ * Layout: page shell, section, hero
+ * ===========================================================================*/
+
+.page-shell {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+@media (max-width: 720px) {
+  .page-shell { padding: 0 18px; }
+}
+
+main {
+  /* Sticky nav remains in normal flow, so extra top padding wastes the first viewport. */
+  padding-top: 0;
+}
+
+/* ============================================================================
+ * Language visibility — show only the elements matching <html data-lang>.
+ *
+ * Both languages are rendered into the page (Astro static output); the
+ * inactive copy is display:none. The pre-paint inline script in BaseLayout
+ * sets data-lang BEFORE first paint so we never flash the wrong language.
+ * ===========================================================================*/
+
+[data-lang-only]                                  { display: none; }
+:root[data-lang='en'] [data-lang-only='en']       { display: revert; }
+:root[data-lang='zh'] [data-lang-only='zh']       { display: revert; }
+
+.section {
+  padding: var(--section-pad-y) 0;
+  border-top: 1px solid var(--gray-100);
+}
+
+/* Both languages render; the first section per language is marked with
+   data-section-first so the no-border treatment follows the active lang. */
+.section[data-section-first] {
+  border-top: 0;
+  padding-top: 32px;
+}
+
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin: 0 0 10px;
+  padding-bottom: 4px;
+  border-bottom: 1.5px solid color-mix(in oklch, var(--clay) 35%, transparent);
+}
+
+.section-title {
+  font-family: var(--sans);
+  font-size: clamp(26px, 3vw, 34px);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  margin: 0 0 6px;
+}
+
+.section-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gray-500);
+  margin-bottom: 24px;
+}
+
+.section-body { display: block; }
+.section-body > * + * { margin-top: 16px; }
+.section-body > h3 + * { margin-top: 8px; }
+
+/* ============================================================================
+ * Generic surfaces (panel / card)
+ * ===========================================================================*/
+
+.panel {
+  background: var(--paper);
+  border: var(--border);
+  border-radius: var(--radius-panel);
+  padding: 18px 20px;
+  margin: 0;
+}
+
+.card {
+  background: var(--paper);
+  border: var(--border);
+  border-radius: var(--radius-row);
+  padding: 14px 16px;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: var(--slate);
+    box-shadow: var(--shadow-lift);
+  }
+}
+
+/* ============================================================================
+ * Shiki <pre> — wraps Astro <Code> output. Theme-aware via [data-theme].
+ *
+ * Astro injects two themes; we tag CSS variables so the Shiki output reads
+ * its colors from --shiki-light / --shiki-dark. We map them via [data-theme].
+ * ===========================================================================*/
+
+pre.astro-code,
+pre.shiki {
+  background: var(--code-bg) !important;
+  color: var(--code-fg);
+  border: 1px solid var(--code-border);
+  border-radius: var(--radius-row);
+  padding: 14px 16px;
+  margin: 0;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+pre.astro-code code,
+pre.shiki code {
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: inherit;
+  color: inherit;
+  display: block;
+  min-width: 100%;
+  width: max-content;
+}
+
+pre.astro-code .line { display: inline-block; min-height: 1em; }
+
+/* default = light theme, switch to dark when [data-theme='dark'] OR system dark + no override */
+pre.astro-code,
+pre.astro-code span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+  font-style: var(--shiki-light-font-style);
+  font-weight: var(--shiki-light-font-weight);
+  text-decoration: var(--shiki-light-text-decoration);
+}
+
+[data-theme='dark'] pre.astro-code,
+[data-theme='dark'] pre.astro-code span {
+  color: var(--shiki-dark);
+  background-color: var(--shiki-dark-bg);
+  font-style: var(--shiki-dark-font-style);
+  font-weight: var(--shiki-dark-font-weight);
+  text-decoration: var(--shiki-dark-text-decoration);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) pre.astro-code,
+  :root:not([data-theme='light']) pre.astro-code span {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
+    font-style: var(--shiki-dark-font-style);
+    font-weight: var(--shiki-dark-font-weight);
+    text-decoration: var(--shiki-dark-text-decoration);
+  }
+}
+
+/* ============================================================================
+ * Print
+ * ===========================================================================*/
+
+@media print {
+  :root { --ivory: #fff; --paper: #fff; }
+  .section-nav, .theme-toggle, .copy-btn, .lifecycle-controls { display: none !important; }
+  body { background: #fff; color: #000; }
+  pre.astro-code { background: #f5f5f5 !important; color: #000 !important; }
+  .panel, .card { box-shadow: none !important; break-inside: avoid; }
+  a { color: #000; }
+}
+
+/* ============================================================================
+ * Reduced motion
+ * ===========================================================================*/
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

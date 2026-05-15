@@ -1,0 +1,48 @@
+---
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  lang?: string;
+}
+const { title, description, lang = 'zh-CN' } = Astro.props as Props;
+---
+
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="generator" content={Astro.generator} />
+  <title>{title}</title>
+  {description && <meta name="description" content={description} />}
+
+  {/* Pre-paint bootstrap — runs BEFORE first paint to avoid FOUC.
+      Sets data-theme and data-lang on <html> based on localStorage / system. */}
+  <script is:inline>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      } catch (_) {}
+      try {
+        var l = localStorage.getItem('lang');
+        if (l !== 'en' && l !== 'zh') {
+          var nl = (navigator.language || 'zh').toLowerCase();
+          l = nl.indexOf('zh') === 0 ? 'zh' : 'en';
+        }
+        document.documentElement.setAttribute('data-lang', l);
+        document.documentElement.setAttribute('lang', l === 'zh' ? 'zh-CN' : 'en');
+      } catch (_) {
+        document.documentElement.setAttribute('data-lang', 'zh');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <slot />
+</body>
+</html>

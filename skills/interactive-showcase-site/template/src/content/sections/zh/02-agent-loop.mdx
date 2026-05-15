@@ -1,0 +1,167 @@
+---
+id: agent-loop
+title: "Agent 循环"
+order: 2
+heroKind: lifecycle
+eyebrow: "AGENT LIFECYCLE · 6 STEPS"
+estimatedRead: 4
+lang: zh
+---
+
+import Lifecycle from '@/components/Lifecycle.svelte';
+import Mermaid   from '@/components/Mermaid.svelte';
+import Tabs      from '@/components/Tabs.svelte';
+import CodeBlock from '@/components/CodeBlock.svelte';
+import Callout   from '@/components/Callout.astro';
+import Chip      from '@/components/Chip.astro';
+
+## 一句话定位
+
+Agent 循环是一个**只做六件事的状态机**：读消息、想下一步、要么调工具、要么要更多信息、要么直接回答、否则收尾。其它所有花活都是这六步的组合。
+
+<Callout kind="tldr">
+  Agent ≠ "聊天机器人套了 tool-use"。它是一个**多轮收敛**循环：每一轮都允许工具调用 / 自我修正 / 继续推理，直到产出一个用户可见的最终回复或触发兜底条件。
+</Callout>
+
+<Lifecycle
+  client:visible
+  autoplay
+  steps={[
+    {
+      num: 1,
+      title: "读上下文",
+      api: "buildContext(messages, tools, system)",
+      desc: "把历史消息、可用工具、系统指令拼成模型 prompt。这一步是确定性的，没有 LLM 调用。",
+      code: "const ctx = buildContext({\n  messages,\n  tools,\n  system,\n});"
+    },
+    {
+      num: 2,
+      title: "调一次模型",
+      api: "model.generate(ctx)",
+      desc: "结构化输出：要么是 tool_call 数组，要么是 text。模型决策只发生在这一步。",
+      code: "const res = await model.generate(ctx);\n// res.toolCalls?: ToolCall[]\n// res.text?: string"
+    },
+    {
+      num: 3,
+      title: "分发决策",
+      api: "if (toolCalls) → 4 else → 6",
+      desc: "唯一分支点。同时给出 text + toolCalls 时按 toolCalls 走，text 视为中间噪声。",
+      code: "if (res.toolCalls?.length) {\n  // step 4\n} else {\n  // step 6\n}"
+    },
+    {
+      num: 4,
+      title: "执行工具",
+      api: "Promise.all(toolCalls.map(run))",
+      desc: "并行执行所有 toolCall。单个失败转成 error message 喂回模型，不抛断循环。",
+      code: "const results = await Promise.all(\n  res.toolCalls.map(c =>\n    runTool(c).catch(asToolError)\n  )\n);"
+    },
+    {
+      num: 5,
+      title: "回灌 + 续轮",
+      api: "messages.push(...results); goto 1",
+      desc: "把 tool 结果作为新一轮 message 喂回去，回到第 1 步。这一步形成 loop。",
+      code: "messages.push(...results);\nreturn agentLoop(messages);"
+    },
+    {
+      num: 6,
+      title: "终止 + 返回",
+      api: "return res.text",
+      desc: "没有 toolCall 时直接把 text 给用户。也是 max-turns / cost-cap 的兜底退出点。",
+      code: "return {\n  text: res.text,\n  turns: messages.length,\n};"
+    }
+  ]}
+/>
+
+## 状态图
+
+把六步压成节点，**点节点查看每个状态的进入/退出条件**：
+
+<Mermaid
+  client:visible
+  spec={`flowchart LR
+    ctx["1. 读上下文"]
+    gen(["2. 调模型"])
+    branch{"3. 分发"}
+    tool["4. 执行工具"]
+    feed["5. 回灌"]
+    done(["6. 终止"])
+    ctx --> gen --> branch
+    branch -->|tool_calls| tool --> feed --> ctx
+    branch -->|text only| done
+    classDef hot stroke-width:2.5px;
+    class branch hot;`}
+  nodes={{
+    ctx:    { title: "读上下文",  body: "确定性、无 LLM 调用。失败几乎都是 prompt 拼接 bug。" },
+    gen:    { title: "调模型",    body: "唯一一次模型调用。token 预算、超时、限流都在这里观测。" },
+    branch: { title: "分发",      body: "唯一分支点。同时给出 text + toolCalls 按 toolCalls 走。" },
+    tool:   { title: "执行工具",  body: "并行；单个失败转 error message。建议每个 tool 有独立超时。" },
+    feed:   { title: "回灌",      body: "tool 结果作为 user-visible message 回到 1。注意 token 累积。" },
+    done:   { title: "终止",      body: "唯一的用户可见退出。也是 max-turns / cost-cap 的兜底口。" }
+  }}
+/>
+
+## 实现风格对比
+
+同一个 agent loop，三种风格在可观测性上差别巨大：
+
+<Tabs
+  client:visible
+  group="impl"
+  tabs={[
+    {
+      label: "递归调用",
+      html: `
+        <pre><code>async function loop(messages) {
+  const res = await model.generate(buildCtx(messages));
+  if (!res.toolCalls?.length) return res.text;
+  const tools = await runTools(res.toolCalls);
+  return loop([...messages, ...tools]);
+}</code></pre>
+        <p>读起来最像数学。栈深度 = 轮次，&gt;50 轮要小心。</p>
+      `
+    },
+    {
+      label: "while 循环",
+      html: `
+        <pre><code>async function loop(messages) {
+  while (true) {
+    const res = await model.generate(buildCtx(messages));
+    if (!res.toolCalls?.length) return res.text;
+    const tools = await runTools(res.toolCalls);
+    messages = [...messages, ...tools];
+  }
+}</code></pre>
+        <p>最常见。容易加 max-turns / cost-cap 守卫。</p>
+      `
+    },
+    {
+      label: "状态机",
+      html: `
+        <pre><code>type State = 'gen' | 'tool' | 'done';
+async function loop(messages) {
+  let state: State = 'gen';
+  while (state !== 'done') {
+    state = await transition(state, messages);
+  }
+  return finalText(messages);
+}</code></pre>
+        <p>显式状态便于观测、暂停、可视化。生产级 agent 框架（LangGraph 等）走这条。</p>
+      `
+    }
+  ]}
+/>
+
+<Callout kind="warning">
+  三种写法**外层等价**，在出错诊断 / 可观测 / 可中断三件事上差异很大。**生产优先状态机**，原型阶段 while 够用，递归只在教学里用。
+</Callout>
+
+## 哪些事不在这个循环里
+
+<Chip tone="muted">不属于 agent loop</Chip>
+
+- **流式输出**：text token 的流式渲染是 step 2 内部的事，循环不感知
+- **记忆 / RAG**：检索是工具的一种实现，对循环来说就是"调了个 tool"
+- **多模态**：图片 / 音频 在 message 里以 part 形式存在，对循环逻辑无影响
+- **Plan + Execute**：把 step 3 替换成"先生成 plan、再分步执行"——是 step 3 的内部花活，不改外层
+
+> 一句话：**所有"高级 agent 模式"几乎都是 step 3 内部的事**。外层六步是稳定的。

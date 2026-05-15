@@ -1,0 +1,36 @@
+---
+id: overview
+title: "概览"
+order: 1
+heroKind: plain
+eyebrow: "INTRODUCTION"
+estimatedRead: 1
+lang: zh
+---
+
+import Callout from '@/components/Callout.astro';
+import Chip from '@/components/Chip.astro';
+
+## 这是什么
+
+这份模板现在按 **首屏摘要 + 下方 deep-dive** 组织：首屏负责让读者在 1920×1080 内看懂项目全貌，章节负责展开证据、流程和取舍。
+
+<Callout kind="info">
+  真实项目里，先从源码 / README / docs 提炼 3–5 个首屏事实，再把每个事实映射到后续章节。不要在概览里重复首屏已经讲过的内容。
+</Callout>
+
+## 下方章节负责什么
+
+每个 section 在 frontmatter 里声明 `heroKind`，章节注册器按 `order` 排好。推荐把首屏摘要卡片和章节保持一一对应：
+
+- <Chip tone="muted">plain</Chip>  — 没有花活，标题 + 正文。本节就是这种
+- <Chip tone="clay">lifecycle</Chip>  — 编号步骤 + autoplay。下一节是这种
+- <Chip tone="info">mermaid</Chip>  — 可点节点的流程 / 状态图
+- <Chip tone="olive">tabs</Chip>  — 多变体面板切换
+- <Chip tone="rust">side-by-side</Chip>  — 左右对照（保留位）
+
+## 为什么不是继续压缩正文
+
+> 大多数 SDK / 功能讲解的真实尺寸是 **3–6 个相互依赖的概念**，不是 13 章独立内容。多页路由会把它们撕开，让读者频繁跳转、丢失上下文。
+
+单纯缩小字号和间距只能省空间，不能保证读者先看到项目主线。首屏摘要把主线前置，单页 + scroll-spy 则继续保留“我看到了哪、整体在哪”的视觉锚点。

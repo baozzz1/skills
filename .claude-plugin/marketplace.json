@@ -1,0 +1,30 @@
+{
+  "name": "interactive-showcase-site-skills",
+  "owner": {
+    "name": "baozzz1"
+  },
+  "description": "Skills for turning project docs into bilingual interactive explainer sites.",
+  "version": "0.1.0",
+  "plugins": [
+    {
+      "name": "interactive-showcase-site",
+      "source": "./",
+      "description": "Turn a README, SDK, or docs folder into a bilingual interactive single-page explainer site.",
+      "version": "0.1.0",
+      "author": {
+        "name": "baozzz1"
+      },
+      "license": "MIT",
+      "keywords": [
+        "documentation",
+        "astro",
+        "svelte",
+        "interactive-docs",
+        "explainer",
+        "skills"
+      ],
+      "category": "documentation",
+      "skills": "./skills/"
+    }
+  ]
+}

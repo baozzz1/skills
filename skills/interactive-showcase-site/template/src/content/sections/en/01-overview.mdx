@@ -1,0 +1,36 @@
+---
+id: overview
+title: "Overview"
+order: 1
+heroKind: plain
+eyebrow: "INTRODUCTION"
+estimatedRead: 1
+lang: en
+---
+
+import Callout from '@/components/Callout.astro';
+import Chip from '@/components/Chip.astro';
+
+## What this is
+
+The template is now organized as **first-screen summary + below-the-fold deep dive**: the hero is responsible for letting a reader grasp the project inside a 1920×1080 viewport, while the sections below carry the evidence, flows, and trade-offs.
+
+<Callout kind="info">
+  In a real project, distill 3–5 first-screen facts from source / README / docs first, then map each fact to a downstream section. Don't repeat first-screen content inside the overview.
+</Callout>
+
+## What sections are responsible for
+
+Each section declares its `heroKind` in frontmatter, and the section register orders them by `order`. We recommend keeping a 1:1 correspondence between the snapshot cards in the hero and the sections:
+
+- <Chip tone="muted">plain</Chip>  — no theatrics: title + body. This section is one
+- <Chip tone="clay">lifecycle</Chip>  — numbered steps + autoplay. The next one is one
+- <Chip tone="info">mermaid</Chip>  — clickable flow / state diagram
+- <Chip tone="olive">tabs</Chip>  — variant panel switcher
+- <Chip tone="rust">side-by-side</Chip>  — left/right comparison (reserved)
+
+## Why not just compress the body further
+
+> The actual size of most SDK / feature explainers is **3–6 interdependent concepts**, not 13 independent chapters. Multi-page routing tears them apart and makes the reader navigate constantly, losing context.
+
+Shrinking type and spacing alone saves space but doesn't guarantee the reader sees the project's main story first. The first-screen summary front-loads that story; single-page + scroll-spy keeps the "where am I, where's the whole" anchors intact.

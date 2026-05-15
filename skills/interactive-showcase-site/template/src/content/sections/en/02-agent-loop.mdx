@@ -1,0 +1,167 @@
+---
+id: agent-loop
+title: "Agent Loop"
+order: 2
+heroKind: lifecycle
+eyebrow: "AGENT LIFECYCLE · 6 STEPS"
+estimatedRead: 4
+lang: en
+---
+
+import Lifecycle from '@/components/Lifecycle.svelte';
+import Mermaid   from '@/components/Mermaid.svelte';
+import Tabs      from '@/components/Tabs.svelte';
+import CodeBlock from '@/components/CodeBlock.svelte';
+import Callout   from '@/components/Callout.astro';
+import Chip      from '@/components/Chip.astro';
+
+## One-line positioning
+
+The agent loop is a **state machine that does only six things**: read messages, think a next step, either call tools, ask for more info, answer directly, or close out. Every higher pattern is a composition of these six.
+
+<Callout kind="tldr">
+  An agent ≠ "a chatbot wearing tool-use." It's a **multi-turn convergent** loop: each turn permits tool calls / self-correction / continued reasoning, until it produces a user-visible final reply or hits a guardrail exit.
+</Callout>
+
+<Lifecycle
+  client:visible
+  autoplay
+  steps={[
+    {
+      num: 1,
+      title: "Read context",
+      api: "buildContext(messages, tools, system)",
+      desc: "Concatenate history, available tools, and system instructions into a model prompt. Deterministic; no LLM call here.",
+      code: "const ctx = buildContext({\n  messages,\n  tools,\n  system,\n});"
+    },
+    {
+      num: 2,
+      title: "Call the model",
+      api: "model.generate(ctx)",
+      desc: "Structured output: either an array of tool_calls or text. The only step where model decision happens.",
+      code: "const res = await model.generate(ctx);\n// res.toolCalls?: ToolCall[]\n// res.text?: string"
+    },
+    {
+      num: 3,
+      title: "Dispatch",
+      api: "if (toolCalls) → 4 else → 6",
+      desc: "The only branch point. If text + toolCalls both appear, follow toolCalls; treat the text as intermediate noise.",
+      code: "if (res.toolCalls?.length) {\n  // step 4\n} else {\n  // step 6\n}"
+    },
+    {
+      num: 4,
+      title: "Run tools",
+      api: "Promise.all(toolCalls.map(run))",
+      desc: "Run all tool calls in parallel. A single failure becomes an error message fed back to the model; never throw and break the loop.",
+      code: "const results = await Promise.all(\n  res.toolCalls.map(c =>\n    runTool(c).catch(asToolError)\n  )\n);"
+    },
+    {
+      num: 5,
+      title: "Feed back + iterate",
+      api: "messages.push(...results); goto 1",
+      desc: "Push tool results as new messages and loop back to step 1. This is what closes the loop.",
+      code: "messages.push(...results);\nreturn agentLoop(messages);"
+    },
+    {
+      num: 6,
+      title: "Terminate + return",
+      api: "return res.text",
+      desc: "If no tool call, return text to the user. Also the bailout when max-turns / cost-cap / timeout fire.",
+      code: "return {\n  text: res.text,\n  turns: messages.length,\n};"
+    }
+  ]}
+/>
+
+## State diagram
+
+Compress the six steps into nodes — **click a node to view its entry / exit conditions**:
+
+<Mermaid
+  client:visible
+  spec={`flowchart LR
+    ctx["1. Read ctx"]
+    gen(["2. Call model"])
+    branch{"3. Dispatch"}
+    tool["4. Run tools"]
+    feed["5. Feed back"]
+    done(["6. Terminate"])
+    ctx --> gen --> branch
+    branch -->|tool_calls| tool --> feed --> ctx
+    branch -->|text only| done
+    classDef hot stroke-width:2.5px;
+    class branch hot;`}
+  nodes={{
+    ctx:    { title: "Read context", body: "Deterministic, no LLM call. Failures here are almost always prompt-assembly bugs." },
+    gen:    { title: "Call model",   body: "The single model call. Token budget, timeouts, rate limits all observed here." },
+    branch: { title: "Dispatch",     body: "The only branch. text + toolCalls both present → follow toolCalls." },
+    tool:   { title: "Run tools",    body: "Parallel; per-call failure becomes an error message. Give every tool its own timeout." },
+    feed:   { title: "Feed back",    body: "Tool results return as user-visible messages. Mind context-token accumulation." },
+    done:   { title: "Terminate",    body: "The only user-visible exit. Also the bailout for max-turns / cost-cap." }
+  }}
+/>
+
+## Implementation styles
+
+The same agent loop, three styles — observability differs sharply:
+
+<Tabs
+  client:visible
+  group="impl"
+  tabs={[
+    {
+      label: "Recursion",
+      html: `
+        <pre><code>async function loop(messages) {
+  const res = await model.generate(buildCtx(messages));
+  if (!res.toolCalls?.length) return res.text;
+  const tools = await runTools(res.toolCalls);
+  return loop([...messages, ...tools]);
+}</code></pre>
+        <p>Reads the most like math. Stack depth = turns; watch out beyond ~50.</p>
+      `
+    },
+    {
+      label: "while loop",
+      html: `
+        <pre><code>async function loop(messages) {
+  while (true) {
+    const res = await model.generate(buildCtx(messages));
+    if (!res.toolCalls?.length) return res.text;
+    const tools = await runTools(res.toolCalls);
+    messages = [...messages, ...tools];
+  }
+}</code></pre>
+        <p>Most common. Easy to bolt on max-turns / cost-cap guards.</p>
+      `
+    },
+    {
+      label: "State machine",
+      html: `
+        <pre><code>type State = 'gen' | 'tool' | 'done';
+async function loop(messages) {
+  let state: State = 'gen';
+  while (state !== 'done') {
+    state = await transition(state, messages);
+  }
+  return finalText(messages);
+}</code></pre>
+        <p>Explicit state aids observability, pause, and visualization. Production agent frameworks (LangGraph etc.) take this path.</p>
+      `
+    }
+  ]}
+/>
+
+<Callout kind="warning">
+  All three are **outwardly equivalent**, but differ sharply on debuggability / observability / interruptibility. **Production should prefer state machines**; while-loops are fine for prototypes; recursion is for teaching.
+</Callout>
+
+## What's not in this loop
+
+<Chip tone="muted">not part of the agent loop</Chip>
+
+- **Streaming output**: text-token streaming happens inside step 2; the loop doesn't observe it
+- **Memory / RAG**: retrieval is a tool implementation; to the loop it just looks like "called a tool"
+- **Multimodal**: images / audio live inside message parts; loop logic is unchanged
+- **Plan + Execute**: replaces step 3 with "plan, then execute step-by-step" — internal to step 3, doesn't change the outer six
+
+> One line: **almost every "advanced agent pattern" is internal to step 3**. The outer six steps are stable.

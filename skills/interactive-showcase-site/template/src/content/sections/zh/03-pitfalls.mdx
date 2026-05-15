@@ -1,0 +1,52 @@
+---
+id: pitfalls
+title: "常见坑"
+order: 3
+heroKind: plain
+eyebrow: "ANTI-PATTERNS"
+estimatedRead: 2
+lang: zh
+---
+
+import Callout from '@/components/Callout.astro';
+import Chip from '@/components/Chip.astro';
+
+## 把所有逻辑塞进 step 2
+
+最常见的"agent 不行"原因：把判断逻辑塞进 prompt，让模型一次想清楚全部决策。
+
+<Callout kind="warning">
+  Step 2（调模型）应当**只负责生成下一步意图**——是 tool_call 还是 text。所有 "循环控制 / 失败重试 / 记忆读写" 应该在 step 1 (`buildContext`) 和 step 4 (`runTool`) 里实现，不靠模型记得。
+</Callout>
+
+## 工具失败就抛断循环
+
+```ts
+// ❌ 一个 tool 失败拖死整轮
+const results = await Promise.all(
+  res.toolCalls.map(c => runTool(c))   // 任一 reject → 全挂
+);
+
+// ✓ 转成 error message 喂回去
+const results = await Promise.all(
+  res.toolCalls.map(c => runTool(c).catch(asToolError))
+);
+```
+
+模型见到 error message 通常会**自己重试或换工具**——比手写代码兜底简单得多。
+
+## 没有兜底退出条件
+
+只看 `res.toolCalls?.length === 0` 退出循环是不够的。生产环境必须有：
+
+- <Chip tone="muted">max-turns</Chip>  循环超过 N 轮强制退出（防死循环）
+- <Chip tone="muted">cost-cap</Chip>  累计 token 超过预算强制退出（防失控开销）
+- <Chip tone="muted">timeout</Chip>  单轮超时（防卡死）
+
+三个条件**任一**触发都进 step 6 终止，不要等模型决定。
+
+## 把"记忆"当 agent 状态
+
+如果 agent 需要 "记住 N 轮前的某个事实"，应该写一个 `memory.search(query)` 工具让模型自己调，而不是把所有历史塞进每轮 message。后者很快撑爆 context。
+
+> 一句话：**记忆是 step 4 的实现细节，不是 agent 循环的状态**。

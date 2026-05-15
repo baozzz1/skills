@@ -1,0 +1,52 @@
+---
+id: pitfalls
+title: "Common Pitfalls"
+order: 3
+heroKind: plain
+eyebrow: "ANTI-PATTERNS"
+estimatedRead: 2
+lang: en
+---
+
+import Callout from '@/components/Callout.astro';
+import Chip from '@/components/Chip.astro';
+
+## Cramming all logic into step 2
+
+The most common reason "the agent doesn't work": stuffing decision logic into the prompt and asking the model to figure everything out in one shot.
+
+<Callout kind="warning">
+  Step 2 (call the model) should **only generate the next-step intent** — either a tool_call or text. Loop control / failure retry / memory read-write belongs in step 1 (`buildContext`) and step 4 (`runTool`), not on the model's memory.
+</Callout>
+
+## Letting one tool failure break the loop
+
+```ts
+// Bad: one failed tool kills the whole turn
+const results = await Promise.all(
+  res.toolCalls.map(c => runTool(c))   // any reject → all fail
+);
+
+// Good: turn it into an error message and feed it back
+const results = await Promise.all(
+  res.toolCalls.map(c => runTool(c).catch(asToolError))
+);
+```
+
+When the model sees an error message it usually **retries or switches tools on its own** — far simpler than handwritten fallback code.
+
+## No bailout exits
+
+Checking `res.toolCalls?.length === 0` alone isn't enough to exit. Production must have:
+
+- <Chip tone="muted">max-turns</Chip>  hard exit after N turns (prevents loops)
+- <Chip tone="muted">cost-cap</Chip>  hard exit when token usage exceeds budget (prevents runaway cost)
+- <Chip tone="muted">timeout</Chip>  per-turn timeout (prevents hangs)
+
+**Any** of the three triggers step 6 termination — never wait on the model to decide.
+
+## Treating "memory" as agent state
+
+If the agent needs to "remember a fact from N turns ago", write a `memory.search(query)` tool and let the model call it, rather than stuffing all history into every turn's messages. The latter blows up context fast.
+
+> One line: **memory is an implementation detail of step 4, not a state of the agent loop**.
