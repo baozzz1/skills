@@ -13,8 +13,9 @@ TOC, light/dark theme toggle, EN/ZH language toggle, and a one-screen project
 summary. Every page ships **bilingual by default** (English + Simplified
 Chinese), switched live from the top bar without a reload.
 
-This is the **npm-project counterpart** to `interactive-html-artifact` (which
-shipped single-file `.html` artifacts and is now superseded by this skill).
+This is the **package-managed project counterpart** to
+`interactive-html-artifact` (which shipped single-file `.html` artifacts and
+is now superseded by this skill).
 The visual language is lifted from `engineering-artifact-design` (warm
 editorial palette, paper-warm neutrals, serif headings) and aligned with
 Anthropic Claude's design directives — no AI-slop tropes, no system fonts,
@@ -27,7 +28,7 @@ Use this skill when the user asks for any of:
 - "把这份 SDK / 项目文档变成可交互网页"
 - "deep dive 风格的文档站" / "类似 deep-dive-claude-code.vercel.app"
 - "做一个 ccunpacked.dev 那种产品讲解站"
-- "用 npm 项目做交互式 README"
+- "用现代 JS 项目做交互式 README"
 - "Astro / Svelte 写的文档 explainer，要部署到 Vercel"
 - "把这个 markdown 文件夹变成一页讲清楚的网站"
 
@@ -85,8 +86,8 @@ Do **not** use this skill for:
    `src/i18n/strings.ts`; both `en` and `zh` keys must be filled when adding
    a new string. A missing language for a given section `id` is a build error
    (Zod refinement catches it).
-9. **Verification gate.** Before declaring done, `pnpm typecheck` and
-   `pnpm build` must both exit with code 0. Failing either = not done.
+9. **Verification gate.** Before declaring done, `bun run typecheck` and
+   `bun run build` must both exit with code 0. Failing either = not done.
 
 ## Architecture
 
@@ -95,8 +96,8 @@ skills/
 └── interactive-showcase-site/
     ├── SKILL.md                   ← this file
     └── template/                  ← frozen scaffold; agent COPIES, does not edit
-        ├── package.json           ← deps locked via pnpm-lock.yaml
-        ├── pnpm-lock.yaml
+        ├── package.json           ← deps locked via bun.lock
+        ├── bun.lock
         ├── astro.config.mjs       ← Shiki dual themes (min-light / min-dark)
         ├── tsconfig.json
         ├── .gitignore
@@ -152,10 +153,10 @@ agent writes only:
   src/components/*Diagram.svelte (only if a section needs custom viz)
          │
          ▼
-pnpm install && pnpm typecheck && pnpm build
+bun install --frozen-lockfile && bun run typecheck && bun run build
          │
          ▼
-pnpm dev (background) → user opens http://127.0.0.1:4321/
+bun run dev (background) → user opens http://127.0.0.1:4321/
 ```
 
 ## Workflow
@@ -213,10 +214,12 @@ When triggered:
    # If unavailable, resolve the directory containing this SKILL.md and use its template/.
    cp -R "${CLAUDE_SKILL_DIR}/template/" <output-path>
    cd <output-path>
-   pnpm install                           # pnpm lockfile pre-pinned
+   bun install --frozen-lockfile          # bun.lock is pre-pinned
    ```
-   If the environment lacks `pnpm`, fall back to `npm install` (skill is
-   compatible; the lockfile is just informational under npm).
+   If the environment lacks `bun`, fall back to `pnpm install` or
+   `npm install` only as a local compatibility path. Do not commit generated
+   `pnpm-lock.yaml` / `package-lock.json` files into the copied output unless
+   the user explicitly asks to change that project's package manager.
 
 6. **Generate bilingual content.** For each section in the approved outline,
    write **two** files: `src/content/sections/en/NN-<id>.mdx` and
@@ -243,11 +246,11 @@ When triggered:
    pass `favicon={\`\${import.meta.env.BASE_URL}favicon.svg\`}` to
    `<BaseLayout>` instead.
 
-9. **Verify.** Run `pnpm typecheck` and `pnpm build`. Both must exit 0. If
-   typecheck warns about deprecated Zod hints (Astro 6 migration noise), that's
-   acceptable; only errors block.
+9. **Verify.** Run `bun run typecheck` and `bun run build`. Both must exit 0.
+   If typecheck warns about deprecated Zod hints (Astro 6 migration noise),
+   that's acceptable; only errors block.
 
-10. **Hand off.** Start `pnpm dev` in the background. Print to the user:
+10. **Hand off.** Start `bun run dev` in the background. Print to the user:
    - Preview URL: `http://127.0.0.1:4321/`
    - Generated section list (id + heroKind)
    - Build warnings (if any)
@@ -271,7 +274,7 @@ If the user asks to add / edit / reorder a section after the first delivery:
   the scaffold" instruction): `src/components/{Hero,Lifecycle,Mermaid,Tabs,
   ThemeToggle,LangToggle,CodeBlock,SectionNav,Callout,Chip}.{svelte,astro}`,
   `src/i18n/lang.svelte.ts`, `src/styles/{tokens,global}.css`,
-  `astro.config.mjs`, `tsconfig.json`, `package.json`, `pnpm-lock.yaml`,
+  `astro.config.mjs`, `tsconfig.json`, `package.json`, `bun.lock`,
   `src/layouts/BaseLayout.astro`, `src/content.config.ts`.
 - After edits, re-run typecheck + build. Same gates apply.
 
@@ -502,7 +505,7 @@ controls the slab uniformly — do not undo that override.
 
 ## Verification Checklist
 
-Run `pnpm typecheck && pnpm build` first — both must exit 0. Then walk
+Run `bun run typecheck && bun run build` first — both must exit 0. Then walk
 through this list in the dev preview (~3 minutes):
 
 - [ ] At 1920×1080, the sticky top controls, fixed right-side TOC, page hero,
