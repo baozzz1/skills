@@ -26,16 +26,17 @@ claude plugin validate .
 claude plugin validate .claude-plugin/plugin.json
 claude plugin validate .claude-plugin/marketplace.json
 cd skills/interactive-showcase-site/template
-pnpm typecheck && pnpm build
+bun install --frozen-lockfile
+bun run typecheck && bun run build
 # Also load the built artifact once — dev mode hides CSS-bundling bugs.
-pnpm preview     # then visit http://127.0.0.1:4321/ in a browser
+bun run preview     # then visit http://127.0.0.1:4321/ in a browser
 ```
 
 Expected non-blocking output: Astro/Zod deprecation hints from `astro check` and a Vite chunk-size warning from Mermaid.
 
 ## Known gotcha: Svelte CSS orphaned in MDX islands
 
-**Symptom.** `pnpm dev` looks perfect, `pnpm preview` (and GitHub Pages) renders Lifecycle / Mermaid / Tabs as **unstyled flowing text** — the 6-step cards collapse into one line, Mermaid stays on "渲染中…", Tabs show all panels stacked.
+**Symptom.** `bun run dev` looks perfect, `bun run preview` (and GitHub Pages) renders Lifecycle / Mermaid / Tabs as **unstyled flowing text** — the 6-step cards collapse into one line, Mermaid stays on "渲染中…", Tabs show all panels stacked.
 
 **Cause.** Astro 6 + Svelte 5 puts the scoped CSS of Svelte components that MDX uses with `client:visible` into a **separate CSS chunk**, and then the generated `index.html` never emits a `<link rel="stylesheet">` for that chunk. Only `client:load` components rendered directly from `.astro` files (Hero, SectionNav, …) reach the page's main CSS. Dev mode masks the bug because Vite injects scoped styles at runtime — only the production build is broken.
 
@@ -53,9 +54,9 @@ import '@/components/CodeBlock.svelte';
 
 - Any new Svelte component added to the MDX authoring API **must** be registered in that side-effect block. `SKILL.md` "Authoring API" calls this out — keep both in sync.
 - Don't leave unused Svelte imports in MDX. They don't break the page on their own, but they end up naming the orphan CSS chunk and make this bug harder to spot.
-- Never sign off on a template change with only `pnpm dev`. Always re-verify with `pnpm build && pnpm preview` (and ideally diff svelte hash classes — see below).
+- Never sign off on a template change with only `bun run dev`. Always re-verify with `bun run build && bun run preview` (and ideally diff svelte hash classes — see below).
 
-**Quick diff check** after `pnpm build`:
+**Quick diff check** after `bun run build`:
 
 ```shell
 cd skills/interactive-showcase-site/template
@@ -75,7 +76,7 @@ must NOT appear in published previews.
 
 ```shell
 cd skills/interactive-showcase-site/template
-pnpm build && pnpm preview     # http://127.0.0.1:4321/ — no dev toolbar
+bun run build && bun run preview     # http://127.0.0.1:4321/ — no dev toolbar
 ```
 
 Other ways to guarantee the toolbar is hidden:
