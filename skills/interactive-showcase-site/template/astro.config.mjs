@@ -9,11 +9,22 @@ import svelte from '@astrojs/svelte';
 const site = process.env.SITE_URL || undefined;
 const base = process.env.BASE_PATH || '/';
 
+// Split-origin hosts (page on one origin, static assets on a CDN) need an
+// `assetsPrefix` separate from `base`. Astro's `base` is a path prefix and
+// gets normalised with a leading `/`; stuffing a full URL into it produces
+// `/https://cdn.../...` and the page 404s its CSS/JS. When a deploy target
+// publishes assets to a separate CDN, pass its absolute URL via ASSETS_PREFIX
+// (e.g. ASSETS_PREFIX="$YOUR_HOST_CDN_BASE_URL" astro build).
+const assetsPrefix = process.env.ASSETS_PREFIX || undefined;
+
 // https://astro.build/config
 export default defineConfig({
   site,
   base,
   output: 'static',
+  build: {
+    assetsPrefix
+  },
   integrations: [
     mdx(),
     svelte()
