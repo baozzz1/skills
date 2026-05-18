@@ -580,6 +580,7 @@ through this list in the dev preview (~3 minutes):
 | `git commit` after delivering the scaffold | Leave the working tree dirty; user reviews and commits |
 | Overwrite a non-empty target directory silently | Stop and ask the user if the target looks foreign |
 | Rebuild template/ scaffolding inside a user project | Template is frozen; only edit `content/`, `*Diagram.svelte`, and the page hero literals |
+| Pass a full CDN URL via `BASE_PATH` for split-origin hosts (page-on-A, assets-on-B) | `base` is a path prefix and gets normalised with a leading `/` — full URLs become `/https://…` and CSS/JS 404. The template reads `ASSETS_PREFIX` into Astro's `build.assetsPrefix`, which is the correct knob. If a deploy platform exposes its CDN base under a different env name, map it at build time (`ASSETS_PREFIX="$YOUR_HOST_CDN_BASE_URL" astro build`) — don't bake host-specific names into the template |
 
 ## Resources
 
