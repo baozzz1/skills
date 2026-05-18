@@ -88,6 +88,14 @@ Do **not** use this skill for:
    (Zod refinement catches it).
 9. **Verification gate.** Before declaring done, `bun run typecheck` and
    `bun run build` must both exit with code 0. Failing either = not done.
+10. **`.gitignore` ships with the template and stays correct.** The template
+    `.gitignore` is part of the frozen scaffold and is copied as-is. It must
+    cover at minimum: `node_modules/`, `dist/`, `.astro/`, `.env` / `.env.*`, `.DS_Store`. Do **not** delete
+    the file, do **not** start scaffolding with no `.gitignore`, and do
+    **not** commit any of those paths. If the user runs a deploy step
+    (`hosting deploy` / similar) that creates new metadata directories,
+    extend the `.gitignore` rather than leaving the state for the user to
+    discover later.
 
 ## Architecture
 
@@ -275,7 +283,9 @@ If the user asks to add / edit / reorder a section after the first delivery:
   ThemeToggle,LangToggle,CodeBlock,SectionNav,Callout,Chip}.{svelte,astro}`,
   `src/i18n/lang.svelte.ts`, `src/styles/{tokens,global}.css`,
   `astro.config.mjs`, `tsconfig.json`, `package.json`, `bun.lock`,
-  `src/layouts/BaseLayout.astro`, `src/content.config.ts`.
+  `src/layouts/BaseLayout.astro`, `src/content.config.ts`, `.gitignore`
+  (the template's `.gitignore` covers build / deps / hosting metadata / logs
+  / env / OS files — only **extend** it, never narrow it).
 - After edits, re-run typecheck + build. Same gates apply.
 
 ## Authoring API (what an MDX section can use)
@@ -546,6 +556,10 @@ through this list in the dev preview (~3 minutes):
 - [ ] Print preview hides controls, keeps narrative; backgrounds become white.
 - [ ] No `<input type="checkbox">` in checklist content unless the user
       asked for an interactive checklist (default is `✓` glyph).
+- [ ] `.gitignore` exists in the project root and excludes `node_modules/`,
+      `dist/`, `.astro/`, `.web-hosting/`, `log/`, `*.log`, `.env*`,
+      `.DS_Store`. `git status` after install + build + deploy shows none of
+      those paths as untracked.
 
 ## Common Pitfalls
 

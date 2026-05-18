@@ -14,7 +14,8 @@ yarn-error.log*
 
 # environment
 .env
-.env.production
+.env.*
+!.env.example
 
 # editor / OS
 .DS_Store
