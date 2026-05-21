@@ -33,39 +33,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          version: 10
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          # Intentionally NOT using `cache: pnpm` here — that integration calls
-          # `pnpm store path` before any install has run, and pnpm 10 returns
-          # a placeholder path that setup-node can't resolve (see error
-          # "Some specified paths were not resolved, unable to cache
-          # dependencies"). We cache the store explicitly below instead, per
-          # https://pnpm.io/continuous-integration#github-actions.
-
-      - name: Resolve pnpm store path
-        shell: bash
-        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
-
-      - name: Cache pnpm store
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('skills/interactive-showcase-site/template/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          bun-version: 1.3.10
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Build
-        run: pnpm build
+        run: bun run build
         env:
           # Project page lives at /skills/; the template is built with this
           # base so its CSS / JS / font URLs resolve correctly on Pages.
