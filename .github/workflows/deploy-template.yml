@@ -4,6 +4,9 @@ name: Deploy template preview to GitHub Pages
 # output to GitHub Pages so https://baozzz1.github.io/skills/ shows a live
 # preview of the scaffold. Triggered on push to main/develop when the
 # template (or this workflow) changes, and manually via workflow_dispatch.
+#
+# For pull-request validation (build-only, no deploy) see
+# .github/workflows/dry-run-template.yml.
 
 on:
   push:
