@@ -1,0 +1,25 @@
+---
+id: zh-verification
+conceptId: verification
+routeSlug: verification
+title: "验证矩阵"
+order: 4
+category: system
+lang: zh
+---
+
+<h2 id="problem">问题</h2>
+
+dev 模式会掩盖生产 CSS bundling 问题，而四个模板会放大这个风险。
+
+<h2 id="structure">结构</h2>
+
+验证由每模板构建、内核漂移检查、语言配对检查，以及针对构建后 HTML 的 CSS hash diff 组成。
+
+<h2 id="implementation">实现</h2>
+
+CI 对每个模板跑矩阵。本地开发在宣布 package ready 前使用同一组命令。
+
+<h2 id="when-not-to-use">何时不该用</h2>
+
+不要只靠 `bun run dev` 交付。必须 build、预览构建产物，并检查 Svelte CSS 覆盖。

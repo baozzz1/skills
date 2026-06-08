@@ -1,0 +1,235 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import FlowGraph from '@/components/FlowGraph.svelte';
+import LangToggle from '@/components/LangToggle.svelte';
+import OnThisPage from '@/components/OnThisPage.svelte';
+import Sidebar from '@/components/Sidebar.svelte';
+import ThemeToggle from '@/components/ThemeToggle.svelte';
+import { categoryTree, graphForConcept, pageHeadings, previousNext } from '@/lib/atlas';
+
+import '@/components/Sidebar.svelte';
+import '@/components/OnThisPage.svelte';
+import '@/components/FlowGraph.svelte';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('concepts');
+  const enEntries = entries.filter((entry) => entry.data.lang === 'en').sort((a, b) => a.data.order - b.data.order);
+
+  return enEntries.map((entryEn) => {
+    const entryZh = entries.find((entry) => entry.data.lang === 'zh' && entry.data.conceptId === entryEn.data.conceptId);
+    if (!entryZh) {
+      throw new Error(`Missing zh concept for ${entryEn.data.conceptId}`);
+    }
+    return {
+      params: { slug: entryEn.data.routeSlug },
+      props: { entryEn, entryZh }
+    };
+  });
+}
+
+const { entryEn, entryZh } = Astro.props;
+const { Content: ContentEn } = await render(entryEn);
+const { Content: ContentZh } = await render(entryZh);
+const conceptId = entryEn.data.conceptId;
+const graph = graphForConcept(conceptId);
+const pager = previousNext(conceptId);
+const siteTitle = 'Knowledge-Wiki Diagram Atlas';
+const faviconLetter = 'W';
+---
+
+<BaseLayout
+  title={`${entryEn.data.title} · ${siteTitle}`}
+  description="Knowledge-wiki diagram atlas template built with Astro 6 + Svelte 5."
+  faviconLetter={faviconLetter}
+>
+  <header class="topbar">
+    <a class="brand" href={import.meta.env.BASE_URL}>
+      <span class="mark" aria-hidden="true">{faviconLetter}</span>
+      <span>{siteTitle}</span>
+    </a>
+    <div class="controls" aria-label="Display controls">
+      <ThemeToggle client:load />
+      <LangToggle client:load />
+    </div>
+  </header>
+
+  <main class="wiki-shell">
+    <Sidebar client:load tree={categoryTree} currentId={conceptId} />
+
+    <article class="concept">
+      <p class="eyebrow" data-lang-only="en">{entryEn.data.category}</p>
+      <p class="eyebrow" data-lang-only="zh">{entryZh.data.category}</p>
+      <h1 data-lang-only="en">{entryEn.data.title}</h1>
+      <h1 data-lang-only="zh">{entryZh.data.title}</h1>
+
+      <FlowGraph client:visible graph={graph} />
+
+      <div class="prose" data-lang-only="en">
+        <ContentEn />
+      </div>
+      <div class="prose" data-lang-only="zh">
+        <ContentZh />
+      </div>
+
+      <nav class="pager" aria-label="Previous and next concepts">
+        {pager.previous && (
+          <a href={`${import.meta.env.BASE_URL}${pager.previous.slug}/`} class="prev">
+            <span data-lang-only="en">Previous</span>
+            <span data-lang-only="zh">上一个</span>
+            <strong data-lang-only="en">{pager.previous.titleEn}</strong>
+            <strong data-lang-only="zh">{pager.previous.titleZh}</strong>
+          </a>
+        )}
+        {pager.next && (
+          <a href={`${import.meta.env.BASE_URL}${pager.next.slug}/`} class="next">
+            <span data-lang-only="en">Next</span>
+            <span data-lang-only="zh">下一个</span>
+            <strong data-lang-only="en">{pager.next.titleEn}</strong>
+            <strong data-lang-only="zh">{pager.next.titleZh}</strong>
+          </a>
+        )}
+      </nav>
+    </article>
+
+    <OnThisPage client:idle headings={pageHeadings} />
+  </main>
+</BaseLayout>
+
+<style>
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: var(--nav-h);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--gray-100);
+    background: color-mix(in oklch, var(--ivory) 86%, transparent);
+    backdrop-filter: blur(14px);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--slate);
+    border-bottom: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .mark {
+    width: 26px;
+    height: 26px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--clay);
+    color: var(--paper);
+    font-family: var(--sans);
+    font-weight: 700;
+  }
+
+  .controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wiki-shell {
+    max-width: calc(var(--content-max) + 360px);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) 180px;
+    gap: 34px;
+    padding: 38px 28px 96px;
+  }
+
+  .concept {
+    min-width: 0;
+  }
+
+  .concept h1 {
+    margin-bottom: 20px;
+  }
+
+  .prose {
+    border-top: var(--border);
+    padding-top: 18px;
+  }
+
+  .prose :global(h2) {
+    margin-top: 34px;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 44px;
+  }
+
+  .pager a {
+    display: grid;
+    gap: 6px;
+    border: var(--border);
+    border-radius: var(--radius-panel);
+    background: var(--paper);
+    padding: 16px;
+  }
+
+  .pager span {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--gray-500);
+  }
+
+  .pager strong {
+    color: var(--slate);
+  }
+
+  .next {
+    text-align: right;
+  }
+
+  @media (max-width: 1180px) {
+    .wiki-shell {
+      grid-template-columns: 220px minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 1040px) {
+    .wiki-shell {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 680px) {
+    .wiki-shell {
+      padding-inline: 18px;
+    }
+
+    .pager {
+      grid-template-columns: 1fr;
+    }
+
+    .next {
+      text-align: left;
+    }
+  }
+
+  @media print {
+    .topbar {
+      display: none;
+    }
+
+    .wiki-shell {
+      display: block;
+      padding: 0;
+    }
+  }
+</style>

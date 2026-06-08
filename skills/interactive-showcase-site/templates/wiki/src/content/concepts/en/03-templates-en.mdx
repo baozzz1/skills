@@ -1,0 +1,25 @@
+---
+id: en-templates
+conceptId: templates
+routeSlug: templates
+title: "Template Family"
+order: 3
+category: system
+lang: en
+---
+
+<h2 id="problem">Problem</h2>
+
+Agents need a simple scaffold step, even when the skill supports multiple interaction archetypes.
+
+<h2 id="structure">Structure</h2>
+
+Each archetype is a complete Astro project under `templates/`: explainer, scrollytelling, cards, and wiki.
+
+<h2 id="implementation">Implementation</h2>
+
+After routing, the agent copies exactly one complete template into the output path and edits only that archetype's approved content surface.
+
+<h2 id="when-not-to-use">When not to use</h2>
+
+Do not assemble templates from overlays at generation time. That makes every output project harder to reason about.

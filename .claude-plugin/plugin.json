@@ -1,6 +1,6 @@
 {
   "name": "interactive-showcase-site",
-  "description": "Turn a README, SDK, or docs folder into a bilingual interactive single-page explainer site.",
+  "description": "Select the right bilingual Astro + Svelte interactive template for a docs scenario.",
   "version": "0.2.0",
   "author": {
     "name": "baozzz1"

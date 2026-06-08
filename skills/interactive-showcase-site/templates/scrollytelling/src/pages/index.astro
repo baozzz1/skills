@@ -1,0 +1,104 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LangToggle from '@/components/LangToggle.svelte';
+import ThemeToggle from '@/components/ThemeToggle.svelte';
+import StickyStage from '@/components/StickyStage.svelte';
+import { story } from '@/lib/story';
+
+// Side-effect import so StickyStage scoped CSS lands in the main page CSS
+// bundle for production builds.
+import '@/components/StickyStage.svelte';
+
+const siteTitleZh = 'Sticky-Stage Scrollytelling';
+const siteTitleEn = 'Sticky-Stage Scrollytelling';
+const faviconLetter = 'S';
+---
+
+<BaseLayout
+  title={siteTitleZh}
+  description="Sticky-stage scrollytelling template built with Astro 6 + Svelte 5."
+  faviconLetter={faviconLetter}
+>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Back to top">
+      <span class="mark" aria-hidden="true">{faviconLetter}</span>
+      <span data-lang-only="zh">{siteTitleZh}</span>
+      <span data-lang-only="en">{siteTitleEn}</span>
+    </a>
+    <div class="controls" aria-label="Display controls">
+      <ThemeToggle client:load />
+      <LangToggle client:load />
+    </div>
+  </header>
+
+  <main id="top" class="page-shell">
+    <StickyStage client:visible story={story} />
+  </main>
+</BaseLayout>
+
+<style>
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: var(--nav-h);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--gray-100);
+    background: color-mix(in oklch, var(--ivory) 86%, transparent);
+    backdrop-filter: blur(14px);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    color: var(--slate);
+    border-bottom: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .mark {
+    width: 26px;
+    height: 26px;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    background: var(--clay);
+    color: var(--paper);
+    font-family: var(--sans);
+    font-weight: 700;
+  }
+
+  .controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  @media (max-width: 640px) {
+    .topbar {
+      padding: 0 14px;
+    }
+
+    .brand [data-lang-only] {
+      max-width: 46vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  @media print {
+    .topbar {
+      display: none;
+    }
+  }
+</style>

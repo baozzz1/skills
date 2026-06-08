@@ -1,0 +1,145 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LangToggle from '@/components/LangToggle.svelte';
+import ThemeToggle from '@/components/ThemeToggle.svelte';
+import { categoryTree, conceptMeta } from '@/lib/atlas';
+
+const siteTitle = 'Knowledge-Wiki Diagram Atlas';
+const faviconLetter = 'W';
+---
+
+<BaseLayout
+  title={siteTitle}
+  description="Knowledge-wiki diagram atlas template built with Astro 6 + Svelte 5."
+  faviconLetter={faviconLetter}
+>
+  <header class="topbar">
+    <a class="brand" href={import.meta.env.BASE_URL}>
+      <span class="mark" aria-hidden="true">{faviconLetter}</span>
+      <span>{siteTitle}</span>
+    </a>
+    <div class="controls" aria-label="Display controls">
+      <ThemeToggle client:load />
+      <LangToggle client:load />
+    </div>
+  </header>
+
+  <main class="page-shell landing">
+    <p class="eyebrow" data-lang-only="en">KNOWLEDGE ATLAS</p>
+    <p class="eyebrow" data-lang-only="zh">知识图谱站</p>
+    <h1 data-lang-only="en">Start with the concept map</h1>
+    <h1 data-lang-only="zh">从概念图谱开始</h1>
+    <p class="lead" data-lang-only="en">
+      This template is for multi-page concept systems. Pick a concept below to open its graph-backed page.
+    </p>
+    <p class="lead" data-lang-only="zh">
+      这个模板用于多页面概念系统。选择下方概念，进入带图谱的页面。
+    </p>
+
+    <div class="category-grid">
+      {categoryTree.map((category) => (
+        <section>
+          <h2 data-lang-only="en">{category.titleEn}</h2>
+          <h2 data-lang-only="zh">{category.titleZh}</h2>
+          <ol>
+            {category.items.map((id) => (
+              <li>
+                <a href={`${import.meta.env.BASE_URL}${conceptMeta[id].slug}/`}>
+                  <span data-lang-only="en">{conceptMeta[id].titleEn}</span>
+                  <span data-lang-only="zh">{conceptMeta[id].titleZh}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: var(--nav-h);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--gray-100);
+    background: color-mix(in oklch, var(--ivory) 86%, transparent);
+    backdrop-filter: blur(14px);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--slate);
+    border-bottom: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .mark {
+    width: 26px;
+    height: 26px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--clay);
+    color: var(--paper);
+    font-family: var(--sans);
+    font-weight: 700;
+  }
+
+  .controls {
+    display: inline-flex;
+    gap: 8px;
+  }
+
+  .landing {
+    padding-top: 84px;
+    padding-bottom: 96px;
+  }
+
+  .lead {
+    font-size: 20px;
+    max-width: 720px;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 36px;
+  }
+
+  section {
+    border: var(--border);
+    border-radius: var(--radius-panel);
+    background: var(--paper);
+    padding: 20px;
+  }
+
+  section h2 {
+    margin: 0 0 12px;
+  }
+
+  ol {
+    margin: 0;
+    padding-left: 20px;
+  }
+
+  li + li {
+    margin-top: 8px;
+  }
+
+  @media (max-width: 760px) {
+    .category-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

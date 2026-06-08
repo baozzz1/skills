@@ -40,13 +40,13 @@
 
   function buildThemeVars() {
     return {
-      background:        readVars('--ivory') || '#FAF9F5',
-      primaryColor:      readVars('--paper') || '#FFFFFF',
-      primaryTextColor:  readVars('--slate') || '#141413',
-      primaryBorderColor: readVars('--gray-500') || '#87867F',
-      lineColor:         readVars('--gray-500') || '#87867F',
-      secondaryColor:    readVars('--gray-100') || '#F0EEE6',
-      tertiaryColor:     readVars('--oat')      || '#E3DACC',
+      background:        readVars('--ivory') || 'transparent',
+      primaryColor:      readVars('--paper') || 'white',
+      primaryTextColor:  readVars('--slate') || 'black',
+      primaryBorderColor: readVars('--gray-500') || 'gray',
+      lineColor:         readVars('--gray-500') || 'gray',
+      secondaryColor:    readVars('--gray-100') || 'whitesmoke',
+      tertiaryColor:     readVars('--oat')      || 'beige',
       fontFamily:        'IBM Plex Sans Variable, system-ui, sans-serif',
       fontSize:          '13px'
     };

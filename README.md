@@ -1,20 +1,16 @@
 # Interactive Showcase Site
 
-> Turn a README, SDK, or docs folder into a bilingual interactive single-page explainer site.
+> Route a README, SDK, docs folder, timeline, card set, or concept map to the right bilingual interactive Astro + Svelte template.
 
 [简体中文](README.zh.md) · [Live preview ↗](https://baozzz1.github.io/skills/)
 
-![Interactive Showcase Site preview — English first screen at 1920×1080](docs/preview/preview-en.png)
-
 ## Intent
 
-`interactive-showcase-site` is an Agent Skill for turning a project, SDK, README, or docs folder into a buildable interactive explainer site.
+`interactive-showcase-site` is an Agent Skill for turning technical source material into a buildable interactive site. It now works as a template library routed by scenario: a single-page explainer, sticky-stage scrollytelling page, holographic collectible card set, or multi-page knowledge-wiki diagram atlas.
 
-The design goal is not a generic documentation portal. It is a focused, editorial single-page artifact that helps a reader understand a technical system quickly: what it is, how it works, where the main risks are, and which details are worth exploring.
+The design goal is not a generic docs portal. It is a focused, editorial artifact that picks the interaction model that best matches how a reader should move through the material: scan one system, follow one evolution, browse a premium collection, or explore related concepts.
 
-Its visual language follows the Claude design direction embedded in Anthropic system prompts: warm paper-like neutrals, clay/coral accents, serif editorial hierarchy, restrained motion, no generic AI gradients, no emoji decoration, and no noisy “AI slop” tropes. The template uses Source Serif 4, IBM Plex Sans, and JetBrains Mono with a tokenized light/dark theme.
-
-The interaction model is inspired by technical explainers such as `ccunpacked.dev` and `deep-dive-claude-code.vercel.app`: scroll-spy navigation for orientation, click-to-detail Mermaid diagrams for structure, autoplaying lifecycle panels for workflows, tabs for implementation tradeoffs, callouts for TL;DR moments, and copy-aware code blocks. The first screen is designed as an executive project summary; the rest of the page becomes the deep dive.
+All templates share the same visual kernel: warm paper-like neutrals, clay/coral accents, serif editorial hierarchy, self-hosted Source Serif 4 / IBM Plex Sans / JetBrains Mono, tokenized light/dark theme, bilingual EN/ZH switching, reduced-motion support, and no generic AI-slop tropes.
 
 ## Installation
 

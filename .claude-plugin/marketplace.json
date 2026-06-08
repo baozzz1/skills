@@ -3,13 +3,13 @@
   "owner": {
     "name": "baozzz1"
   },
-  "description": "Skills for turning project docs into bilingual interactive explainer sites.",
+  "description": "Skills for turning project docs into routed bilingual interactive sites.",
   "version": "0.2.0",
   "plugins": [
     {
       "name": "interactive-showcase-site",
       "source": "./",
-      "description": "Turn a README, SDK, or docs folder into a bilingual interactive single-page explainer site.",
+      "description": "Select the right bilingual Astro + Svelte interactive template for a docs scenario.",
       "version": "0.2.0",
       "author": {
         "name": "baozzz1"

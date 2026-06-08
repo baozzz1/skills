@@ -1,0 +1,25 @@
+---
+id: zh-templates
+conceptId: templates
+routeSlug: templates
+title: "模板族"
+order: 3
+category: system
+lang: zh
+---
+
+<h2 id="problem">问题</h2>
+
+即使 skill 支持多种交互 archetype，agent 的脚手架步骤也必须保持简单。
+
+<h2 id="structure">结构</h2>
+
+每个 archetype 都是 `templates/` 下的完整 Astro 项目：explainer、scrollytelling、cards 和 wiki。
+
+<h2 id="implementation">实现</h2>
+
+路由完成后，agent 只复制一个完整模板到输出目录，并只编辑该 archetype 允许的内容表面。
+
+<h2 id="when-not-to-use">何时不该用</h2>
+
+不要在生成时用 overlay 临时拼模板。那会让每个输出项目都更难理解。

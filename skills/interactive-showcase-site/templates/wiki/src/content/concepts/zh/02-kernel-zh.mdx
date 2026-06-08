@@ -1,0 +1,25 @@
+---
+id: zh-kernel
+conceptId: kernel
+routeSlug: kernel
+title: "共享内核"
+order: 2
+category: foundation
+lang: zh
+---
+
+<h2 id="problem">问题</h2>
+
+如果四个模板各自维护 tokens、主题启动、语言 store 和基础布局，很快就会漂移。
+
+<h2 id="structure">结构</h2>
+
+内核是 source-of-truth 目录，把字节一致的文件同步到每个完整模板脚手架。
+
+<h2 id="implementation">实现</h2>
+
+`scripts/sync-kernel.sh` 把内核复制进每个模板；CI 在同步后检查 `git diff`，发现漂移就失败。
+
+<h2 id="when-not-to-use">何时不该用</h2>
+
+不要把模板专属依赖、示例内容、图谱 / 卡片 / 舞台组件放进内核。
