@@ -1,0 +1,190 @@
+/* =============================================================================
+ * Design tokens — the contract.
+ *
+ * Every color, border, radius, shadow, and font in this site is a CSS variable
+ * defined here. No component is allowed to declare a hex literal.
+ *
+ * Theme = system preference, overridable by [data-theme="light"|"dark"] on
+ * <html>, persisted to localStorage by ThemeToggle.svelte.
+ *
+ * Palette is lifted from `engineering-artifact-design` (the warm editorial
+ * sibling skill) and aligns with Anthropic Claude's `#D97757` clay accent.
+ * The reading-width and card affordances are tuned to feel close to
+ * code.claude.com/docs (Mintlify-derived); we keep the editorial font stack
+ * to satisfy SKILL.md hard rule #7 (no Inter / Roboto / system fonts).
+ *
+ * Font families intentionally avoid Inter / Roboto / Arial / Fraunces / system
+ * fonts per Anthropic's design guidance; we self-host via @fontsource-variable.
+ * ===========================================================================*/
+
+@import '@fontsource-variable/source-serif-4';
+@import '@fontsource-variable/ibm-plex-sans';
+@import '@fontsource-variable/jetbrains-mono';
+
+:root {
+  /* ---------- Brand palette (light is default) -------------------------- */
+  --ivory: #FBFAF6;        /* page background — paper-warm, slight cream lift */
+  --paper: #FFFFFF;        /* surface / panel / card */
+  --slate: #141413;        /* hero text, hot accents on neutrals */
+  --clay: #D97757;         /* THE accent. Use sparingly. */
+  --clay-d: #B85C3E;       /* clay pressed/active */
+  --oat: #E3DACC;          /* warm tinted region — section dividers, callouts */
+  --olive: #788C5D;        /* success, safe, completed */
+  --rust: #B04A3F;         /* danger, attention */
+  --info: #5C7CA3;         /* informational, neutral note */
+
+  --gray-100: #F0EEE6;
+  --gray-300: #D4D2C8;
+  --gray-500: #87867F;
+  --gray-700: #3D3D3A;
+
+  /* ---------- Surface affordances (docs-style) -------------------------- */
+  --surface-subtle:  color-mix(in oklch, var(--gray-100) 60%, var(--paper));
+  --surface-pill:    color-mix(in oklch, var(--clay) 8%, var(--paper));
+
+  /* ---------- Code surface — its OWN family. Never reuse --slate.
+   *
+   * Light mode: warm paper-tan (one step deeper than --paper / --ivory) so
+   *   editorial code blocks read as inset slabs without dropping a hard
+   *   black rectangle onto a cream page. Aligns with Shiki's `min-light`
+   *   theme tokens (dark text on light bg).
+   * Dark mode: paper-warm dark (#0E0D0B) — one step deeper than --ivory.
+   *
+   * Verify by toggling theme: code-bg should always be one step DEEPER
+   * than --paper, never inverted.
+   * ------------------------------------------------------------------- */
+  --code-bg:        #F2EFE6;
+  --code-bg-soft:   #F8F6EF;
+  --code-border:    rgba(20, 20, 19, 0.10);
+  --code-fg:        #2D2B27;
+  --code-fg-dim:    #5A574F;
+  --code-keyword:   #8B4F87;
+  --code-string:    #5F7C2F;
+  --code-number:    #B25B1E;
+  --code-builtin:   #2F6B8B;
+  --code-comment:   #898679;
+  --code-deco:      #A66200;
+
+  /* ---------- Mermaid (driven by var() inside classDef) ----------------- */
+  --mm-node-fill:    var(--paper);
+  --mm-node-stroke:  var(--gray-500);
+  --mm-node-text:    var(--slate);
+  --mm-edge:         var(--gray-500);
+  --mm-hot-fill:     color-mix(in oklch, var(--clay) 12%, var(--paper));
+  --mm-hot-stroke:   var(--clay);
+  --mm-hot-text:     var(--slate);
+  --mm-cluster-fill: var(--gray-100);
+  --mm-cluster-text: var(--gray-700);
+
+  /* ---------- Typography stacks ----------------------------------------- */
+  /* Latin first, CJK fallback. Self-hosted variable fonts via @fontsource. */
+  --serif-latin: 'Source Serif 4 Variable', ui-serif, Georgia, serif;
+  --serif-cjk:   'Songti SC', 'Source Han Serif SC', 'Noto Serif CJK SC', serif;
+  --sans-latin:  'IBM Plex Sans Variable', ui-sans-serif, sans-serif;
+  --sans-cjk:    'PingFang SC', 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;
+  --mono-latin:  'JetBrains Mono Variable', ui-monospace, monospace;
+  --serif:       var(--serif-latin), var(--serif-cjk);
+  --sans:        var(--sans-latin), var(--sans-cjk);
+  --mono:        var(--mono-latin), var(--mono-cjk, var(--sans-cjk));
+
+  /* ---------- Geometry --------------------------------------------------- */
+  --border-w:     1.5px;
+  --border:       var(--border-w) solid var(--gray-300);
+  --radius-row:   8px;
+  --radius-panel: 12px;
+  --radius-pill:  999px;
+  --shadow-lift:  0 10px 30px rgba(20, 20, 19, 0.10);
+
+  /* ---------- Layout ---------------------------------------------------- */
+  /* content-max sized to docs reading width (~1280px); editorial breathing
+     room kept for hero / lifecycle / mermaid / tabs. Prose readability is
+     enforced separately by paragraph max-width (70ch) inside global.css. */
+  --content-max:    1280px;
+  --section-pad-y:  56px;
+  --hero-pad-y:     44px;
+  --nav-h:          52px;
+}
+
+@media (min-width: 1024px) and (max-height: 1100px) {
+  :root {
+    --section-pad-y: 48px;
+    --hero-pad-y:    36px;
+  }
+}
+
+/* ============================================================================
+ * Dark mode — system preference is default, [data-theme] overrides it.
+ *
+ * In dark mode the code surface goes DARKER than the page bg (not lighter).
+ * Page bg is paper-warm dark (#1C1B19); code is one step deeper (#0E0D0B).
+ * ===========================================================================*/
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ivory:     #1C1B19;
+    --paper:     #262523;
+    --slate:     #F5F4F0;
+    --clay:      #E8936F;
+    --clay-d:    #D97757;
+    --oat:       #3D3832;
+    --olive:     #8FA86E;
+    --rust:      #D4635A;
+    --info:      #7FA0C7;
+
+    --gray-100:  #2E2D2A;
+    --gray-300:  #4A4843;
+    --gray-500:  #9C9B94;
+    --gray-700:  #D9D8D2;
+
+    --surface-subtle:  color-mix(in oklch, var(--gray-100) 60%, var(--paper));
+    --surface-pill:    color-mix(in oklch, var(--clay) 16%, var(--paper));
+
+    --code-bg:        #0E0D0B;
+    --code-bg-soft:   #161412;
+    --code-border:    rgba(232, 230, 222, 0.08);
+    --code-fg:        #E8E6DE;
+    --code-fg-dim:    #B8B5AC;
+    --code-keyword:   #D9A6F0;
+    --code-string:    #C7D88F;
+    --code-number:    #F0B07A;
+    --code-builtin:   #82C4D6;
+    --code-comment:   #8C8B85;
+    --code-deco:      #F0C880;
+
+    --shadow-lift: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+}
+
+[data-theme='dark'] {
+  --ivory:     #1C1B19;
+  --paper:     #262523;
+  --slate:     #F5F4F0;
+  --clay:      #E8936F;
+  --clay-d:    #D97757;
+  --oat:       #3D3832;
+  --olive:     #8FA86E;
+  --rust:      #D4635A;
+  --info:      #7FA0C7;
+
+  --gray-100:  #2E2D2A;
+  --gray-300:  #4A4843;
+  --gray-500:  #9C9B94;
+  --gray-700:  #D9D8D2;
+
+  --surface-subtle:  color-mix(in oklch, var(--gray-100) 60%, var(--paper));
+  --surface-pill:    color-mix(in oklch, var(--clay) 16%, var(--paper));
+
+  --code-bg:      #0E0D0B;
+  --code-bg-soft: #161412;
+  --code-border:  rgba(232, 230, 222, 0.08);
+  --code-fg:      #E8E6DE;
+  --code-fg-dim:  #B8B5AC;
+  --code-keyword: #D9A6F0;
+  --code-string:  #C7D88F;
+  --code-number:  #F0B07A;
+  --code-builtin: #82C4D6;
+  --code-comment: #8C8B85;
+  --code-deco:    #F0C880;
+
+  --shadow-lift: 0 10px 30px rgba(0, 0, 0, 0.35);
+}

@@ -1,20 +1,16 @@
 # Interactive Showcase Site
 
-> 把 README、SDK 或文档目录变成中英双语的可交互单页讲解站点。
+> 把 README、SDK、文档目录、时间线、卡片集合或概念图谱路由到合适的中英双语 Astro + Svelte 交互模板。
 
 [English](README.md) · [在线预览 ↗](https://baozzz1.github.io/skills/)
 
-![Interactive Showcase Site 预览 — 中文首屏，1920×1080](docs/preview/preview-zh.png)
-
 ## 立意
 
-`interactive-showcase-site` 是一个 Agent Skill，用来把项目、SDK、README 或文档目录转换成可构建、可部署的交互式技术讲解站点。
+`interactive-showcase-site` 是一个 Agent Skill，用来把技术材料转换成可构建、可部署的交互式站点。它现在是一个按场景路由的模板库：单页 explainer、sticky-stage scrollytelling、holographic 收藏卡片，以及多页面 knowledge-wiki 图谱站。
 
-它的目标不是做通用文档门户，而是做一份聚焦的、带编辑感的单页技术 artifact：让读者快速理解一个技术系统是什么、如何工作、主要风险在哪里，以及哪些细节值得继续展开。
+它的目标不是做通用文档门户，而是做一份聚焦的、带编辑感的技术 artifact，并根据读者应该如何移动来选择交互模型：扫读一个系统、跟随一次演进、浏览一组高质感对象，或探索一组互相关联的概念。
 
-视觉语言参考了 Anthropic system prompt 中的 Claude design 方向：温暖的纸张底色、clay/coral 强调色、serif 编辑层级、克制动效、避免通用 AI 渐变、避免 emoji 装饰，也避免常见的 “AI slop” 视觉套路。模板使用 Source Serif 4、IBM Plex Sans、JetBrains Mono，并通过 token 化的 light/dark theme 保持一致性。
-
-交互模型参考了 `ccunpacked.dev` 和 `deep-dive-claude-code.vercel.app` 这类技术 explainer：用 scroll-spy 导航维持方位感，用可点击 Mermaid 图解释结构，用 autoplay lifecycle 面板讲流程，用 tabs 对比实现取舍，用 callout 承载 TL;DR，用可复制代码块降低行动成本。首屏负责项目级 executive summary，下方章节负责 deep dive。
+所有模板共享同一套视觉内核：温暖纸张底色、clay/coral 强调色、serif 编辑层级、自托管 Source Serif 4 / IBM Plex Sans / JetBrains Mono、token 化 light/dark theme、中英双语切换、reduced-motion 支持，以及避免通用 AI slop 视觉套路。
 
 ## 安装
 

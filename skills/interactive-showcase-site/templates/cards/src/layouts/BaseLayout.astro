@@ -1,0 +1,70 @@
+---
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  lang?: string;
+  /**
+   * Favicon source. Three modes, in priority order:
+   *   1. `favicon` — absolute or BASE_URL-prefixed path to an asset under
+   *      `public/` (e.g. `${import.meta.env.BASE_URL}favicon.svg`). Use this
+   *      when the project ships a real bitmap / vector mark.
+   *   2. `faviconLetter` — single character that the layout renders as an
+   *      inline SVG mark on the clay accent. Used when no asset exists.
+   *   3. Auto fallback — derives the first ASCII letter of `title` (or 'I'
+   *      if there isn't one) and renders that.
+   */
+  favicon?: string;
+  faviconLetter?: string;
+}
+const { title, description, lang = 'zh-CN', favicon, faviconLetter } = Astro.props as Props;
+
+// Auto-pick the most representative letter when the caller doesn't pass one.
+const autoLetter = (faviconLetter ?? title).normalize('NFKD').match(/[A-Za-z]/)?.[0]?.toUpperCase() ?? 'I';
+
+const inlineFaviconSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
+  <rect width='64' height='64' rx='14' fill='#D97757'/>
+  <text x='32' y='44' text-anchor='middle' font-family='IBM Plex Sans, system-ui, sans-serif' font-size='40' font-weight='600' fill='#FFFFFF'>${autoLetter}</text>
+</svg>`;
+const faviconHref = favicon ?? `data:image/svg+xml;utf8,${encodeURIComponent(inlineFaviconSvg)}`;
+---
+
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="generator" content={Astro.generator} />
+  <title>{title}</title>
+  {description && <meta name="description" content={description} />}
+  <link rel="icon" href={faviconHref} type={favicon ? undefined : 'image/svg+xml'} />
+
+  {/* Pre-paint bootstrap — runs BEFORE first paint to avoid FOUC.
+      Sets data-theme and data-lang on <html> based on localStorage / system. */}
+  <script is:inline>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      } catch (_) {}
+      try {
+        var l = localStorage.getItem('lang');
+        if (l !== 'en' && l !== 'zh') {
+          var nl = (navigator.language || 'zh').toLowerCase();
+          l = nl.indexOf('zh') === 0 ? 'zh' : 'en';
+        }
+        document.documentElement.setAttribute('data-lang', l);
+        document.documentElement.setAttribute('lang', l === 'zh' ? 'zh-CN' : 'en');
+      } catch (_) {
+        document.documentElement.setAttribute('data-lang', 'zh');
+      }
+    })();
+  </script>
+</head>
+<body>
+  <slot />
+</body>
+</html>

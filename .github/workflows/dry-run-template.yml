@@ -1,14 +1,14 @@
-name: Dry-run template build on PR
+name: Dry-run template library build on PR
 
-# Build-only validation for skills/interactive-showcase-site/template/ during
-# pull-request review (合码阶段). No Pages deploy — the real publish lives in
-# .github/workflows/deploy-template.yml and runs after merge to main/develop.
+# Build-only validation for the interactive-showcase-site template library
+# during pull-request review (合码阶段). No Pages deploy — the real publish
+# lives in .github/workflows/deploy-template.yml and runs after merge.
 
 on:
   pull_request:
     branches: [main, develop]
     paths:
-      - 'skills/interactive-showcase-site/template/**'
+      - 'skills/interactive-showcase-site/**'
       - '.github/workflows/dry-run-template.yml'
       - '.github/workflows/deploy-template.yml'
 
@@ -16,15 +16,47 @@ permissions:
   contents: read
 
 concurrency:
-  group: dry-run-template-${{ github.ref }}
+  group: dry-run-template-library-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  validate-contracts:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Unit-test template library validators
+        run: bun test skills/interactive-showcase-site/scripts/lib/template-library-contracts.test.mjs
+
+      - name: Check kernel sync
+        run: |
+          sh skills/interactive-showcase-site/scripts/sync-kernel.sh
+          git diff --exit-code -- skills/interactive-showcase-site/shared/kernel skills/interactive-showcase-site/templates
+
+      - name: Validate template library contract
+        run: bun skills/interactive-showcase-site/scripts/validate-template-library.mjs
+
+  build:
+    needs: validate-contracts
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        template: [explainer, scrollytelling, cards, wiki]
     defaults:
       run:
-        working-directory: skills/interactive-showcase-site/template
+        working-directory: skills/interactive-showcase-site/templates/${{ matrix.template }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,3 +86,6 @@ jobs:
           # asset-URL regressions before merge.
           BASE_PATH: /skills/
           SITE_URL: https://baozzz1.github.io
+
+      - name: Check Svelte CSS coverage
+        run: bun ../../scripts/check-svelte-css.mjs .

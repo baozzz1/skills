@@ -1,0 +1,110 @@
+---
+type Kind = 'tldr' | 'info' | 'warning' | 'danger' | 'success';
+interface Props {
+  kind?: Kind;
+  title?: string;
+}
+const { kind = 'info', title } = Astro.props as Props;
+
+const labelsZh: Record<Kind, string> = {
+  tldr:    'TL;DR',
+  info:    '注意',
+  warning: '小心',
+  danger:  '危险',
+  success: '已确认'
+};
+const labelsEn: Record<Kind, string> = {
+  tldr:    'TL;DR',
+  info:    'Note',
+  warning: 'Warning',
+  danger:  'Danger',
+  success: 'Confirmed'
+};
+---
+
+<aside class={`callout callout-${kind}`} role="note">
+  <div class="head">
+    <span class="dot"></span>
+    {title ? (
+      <span class="label">{title}</span>
+    ) : (
+      <span class="label">
+        <span class="label-l" data-lang-only="zh">{labelsZh[kind]}</span>
+        <span class="label-l" data-lang-only="en">{labelsEn[kind]}</span>
+      </span>
+    )}
+  </div>
+  <div class="body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .callout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 14px 16px;
+    background: var(--paper);
+    border: 1.5px solid var(--gray-300);
+    border-radius: var(--radius-panel);
+    margin: 0;
+  }
+  .head {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray-700);
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gray-500);
+  }
+  /* The label-l children inherit the global data-lang-only display rule. */
+  .body {
+    color: var(--gray-700);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .body :global(p):first-child { margin-top: 0; }
+  .body :global(p):last-child  { margin-bottom: 0; }
+
+  .callout-tldr {
+    background: color-mix(in oklch, var(--clay) 6%, var(--paper));
+    border-color: color-mix(in oklch, var(--clay) 40%, var(--gray-300));
+  }
+  .callout-tldr .label { color: var(--clay); }
+  .callout-tldr .dot { background: var(--clay); }
+
+  .callout-info {
+    border-color: color-mix(in oklch, var(--info) 35%, var(--gray-300));
+  }
+  .callout-info .label { color: var(--info); }
+  .callout-info .dot { background: var(--info); }
+
+  .callout-warning {
+    background: color-mix(in oklch, var(--rust) 5%, var(--paper));
+    border-color: color-mix(in oklch, var(--rust) 35%, var(--gray-300));
+  }
+  .callout-warning .label { color: var(--rust); }
+  .callout-warning .dot { background: var(--rust); }
+
+  .callout-danger {
+    background: color-mix(in oklch, var(--rust) 10%, var(--paper));
+    border-color: var(--rust);
+  }
+  .callout-danger .label { color: var(--rust); }
+  .callout-danger .dot { background: var(--rust); }
+
+  .callout-success {
+    border-color: color-mix(in oklch, var(--olive) 35%, var(--gray-300));
+  }
+  .callout-success .label { color: var(--olive); }
+  .callout-success .dot { background: var(--olive); }
+</style>

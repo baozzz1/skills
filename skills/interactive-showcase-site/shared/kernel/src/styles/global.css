@@ -390,12 +390,12 @@ pre.astro-code span {
  * ===========================================================================*/
 
 @media print {
-  :root { --ivory: #fff; --paper: #fff; }
+  :root { --ivory: Canvas; --paper: Canvas; --slate: CanvasText; }
   .section-nav, .section-toc, .theme-toggle, .copy-btn, .lifecycle-controls { display: none !important; }
-  body { background: #fff; color: #000; }
-  pre.astro-code { background: #f5f5f5 !important; color: #000 !important; }
+  body { background: var(--paper); color: var(--slate); }
+  pre.astro-code { background: var(--gray-100) !important; color: var(--slate) !important; }
   .panel, .card { box-shadow: none !important; break-inside: avoid; }
-  a { color: #000; }
+  a { color: var(--slate); }
 }
 
 /* ============================================================================

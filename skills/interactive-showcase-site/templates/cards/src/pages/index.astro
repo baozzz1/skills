@@ -1,0 +1,145 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LangToggle from '@/components/LangToggle.svelte';
+import ThemeToggle from '@/components/ThemeToggle.svelte';
+import HoloCardGrid from '@/components/HoloCardGrid.svelte';
+import { cards, hero } from '@/lib/cards';
+
+// Side-effect imports so card island CSS lands in the production page bundle.
+import '@/components/HoloCardGrid.svelte';
+import '@/components/HoloCard.svelte';
+
+const siteTitleZh = 'Holographic Collectible Cards';
+const siteTitleEn = 'Holographic Collectible Cards';
+const faviconLetter = 'C';
+---
+
+<BaseLayout
+  title={siteTitleZh}
+  description="Holographic collectible cards template built with Astro 6 + Svelte 5."
+  faviconLetter={faviconLetter}
+>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Back to top">
+      <span class="mark" aria-hidden="true">{faviconLetter}</span>
+      <span data-lang-only="zh">{siteTitleZh}</span>
+      <span data-lang-only="en">{siteTitleEn}</span>
+    </a>
+    <div class="controls" aria-label="Display controls">
+      <ThemeToggle client:load />
+      <LangToggle client:load />
+    </div>
+  </header>
+
+  <main id="top" class="page-shell">
+    <section class="hero">
+      <p class="eyebrow" data-lang-only="en">{hero.eyebrowEn}</p>
+      <p class="eyebrow" data-lang-only="zh">{hero.eyebrowZh}</p>
+      <h1 data-lang-only="en">{hero.titleEn}</h1>
+      <h1 data-lang-only="zh">{hero.titleZh}</h1>
+      <p class="lead" data-lang-only="en">{hero.leadEn}</p>
+      <p class="lead" data-lang-only="zh">{hero.leadZh}</p>
+    </section>
+
+    <section class="cards-section" aria-labelledby="cards-heading">
+      <h2 id="cards-heading" data-lang-only="en">The Set</h2>
+      <h2 id="cards-heading-zh" data-lang-only="zh">卡片组</h2>
+      <HoloCardGrid client:visible cards={cards} mode="glint" />
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: var(--nav-h);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--gray-100);
+    background: color-mix(in oklch, var(--ivory) 86%, transparent);
+    backdrop-filter: blur(14px);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    color: var(--slate);
+    border-bottom: 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .mark {
+    width: 26px;
+    height: 26px;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    border-radius: 8px;
+    background: var(--clay);
+    color: var(--paper);
+    font-family: var(--sans);
+    font-weight: 700;
+  }
+
+  .controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero {
+    min-height: calc(46vh - var(--nav-h));
+    display: grid;
+    align-content: end;
+    gap: 16px;
+    padding: 72px 0 52px;
+  }
+
+  .hero h1 {
+    max-width: 960px;
+    word-break: keep-all;
+  }
+
+  .lead {
+    font-size: clamp(17px, 2vw, 21px);
+    max-width: 760px;
+    color: var(--gray-700);
+  }
+
+  .cards-section {
+    padding: 32px 0 84px;
+    border-top: var(--border);
+  }
+
+  .cards-section h2 {
+    margin: 0 0 22px;
+  }
+
+  @media (max-width: 640px) {
+    .topbar {
+      padding: 0 14px;
+    }
+
+    .brand [data-lang-only] {
+      max-width: 46vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  @media print {
+    .topbar {
+      display: none;
+    }
+  }
+</style>

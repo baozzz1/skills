@@ -1,0 +1,25 @@
+---
+id: en-kernel
+conceptId: kernel
+routeSlug: kernel
+title: "Shared Kernel"
+order: 2
+category: foundation
+lang: en
+---
+
+<h2 id="problem">Problem</h2>
+
+Four templates can drift quickly if each owns its own tokens, theme bootstrap, language store, and baseline layout.
+
+<h2 id="structure">Structure</h2>
+
+The kernel is a source-of-truth folder that syncs byte-identical files into every complete template scaffold.
+
+<h2 id="implementation">Implementation</h2>
+
+`scripts/sync-kernel.sh` copies the kernel into each template, and CI fails when `git diff` shows drift after the sync.
+
+<h2 id="when-not-to-use">When not to use</h2>
+
+Do not put template-specific dependencies, example content, or graph/card/stage components into the kernel.

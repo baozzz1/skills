@@ -1,0 +1,25 @@
+---
+id: en-verification
+conceptId: verification
+routeSlug: verification
+title: "Verification Matrix"
+order: 4
+category: system
+lang: en
+---
+
+<h2 id="problem">Problem</h2>
+
+Dev mode can hide production CSS bundling failures, and four templates multiply that risk.
+
+<h2 id="structure">Structure</h2>
+
+Verification combines per-template build checks, kernel drift checks, language parity checks, and a CSS hash diff over built HTML.
+
+<h2 id="implementation">Implementation</h2>
+
+CI runs a matrix over every template. Local development uses the same commands before declaring the package ready.
+
+<h2 id="when-not-to-use">When not to use</h2>
+
+Do not sign off from `bun run dev` alone. Always build, preview the built artifact, and check Svelte CSS coverage.

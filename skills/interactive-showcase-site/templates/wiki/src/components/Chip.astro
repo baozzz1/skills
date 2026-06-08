@@ -1,0 +1,38 @@
+---
+type Tone = 'clay' | 'olive' | 'rust' | 'info' | 'muted';
+interface Props {
+  tone?: Tone;
+}
+const { tone = 'muted' } = Astro.props as Props;
+---
+
+<span class="chip" data-tone={tone}>
+  <span class="dot" data-tone={tone}></span>
+  <slot />
+</span>
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--gray-300);
+    background: var(--paper);
+    font-family: var(--sans);
+    font-size: 12px;
+    color: var(--gray-700);
+    line-height: 1.4;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gray-500);
+  }
+  .dot[data-tone='clay']  { background: var(--clay); }
+  .dot[data-tone='olive'] { background: var(--olive); }
+  .dot[data-tone='rust']  { background: var(--rust); }
+  .dot[data-tone='info']  { background: var(--info); }
+</style>
