@@ -1,0 +1,33 @@
+/* ThemeToggle — extracted from the component's former scoped <style>.
+   Child selectors are namespaced under .theme-toggle to reproduce the
+   isolation Svelte's scope hash used to provide (.glyph / .label are generic
+   names other components also use). The .theme-toggle bare class name is
+   load-bearing: global.css's @media print rule hides it by that name. */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1.5px solid var(--gray-300);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--gray-700);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.theme-toggle:hover {
+  border-color: var(--slate);
+  color: var(--slate);
+}
+.theme-toggle .glyph {
+  font-size: 13px;
+  line-height: 1;
+  color: var(--clay);
+}
+@media (max-width: 600px) {
+  .theme-toggle .label {
+    display: none;
+  }
+}

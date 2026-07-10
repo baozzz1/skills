@@ -1,5 +1,8 @@
 ---
-import '@/styles/global.css';
+// site.css aggregates global.css + every component stylesheet via @import, so
+// all component CSS is reachable through this page-level static import and can
+// never be orphaned into an island-only chunk. Template-owned (not kernel-synced).
+import '@/styles/site.css';
 
 interface Props {
   title: string;

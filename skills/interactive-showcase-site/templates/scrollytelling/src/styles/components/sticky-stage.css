@@ -1,0 +1,226 @@
+/* StickyStage — extracted from the former scoped <style>.
+   Every non-root selector is namespaced under .story to reproduce Svelte's
+   scope isolation. Two selectors were BARE element selectors (svg, marker path)
+   that would style every SVG on the page if left unscoped. @keyframes node-in /
+   edge-in are renamed sticky-node-in / sticky-edge-in — Svelte localized these
+   names and that protection is gone. */
+.story {
+  padding: 0 0 80px;
+}
+
+.story .hero {
+  min-height: calc(42vh - var(--nav-h));
+  display: grid;
+  align-content: end;
+  gap: 16px;
+  padding: 64px 0 44px;
+}
+
+.story .hero h1 {
+  max-width: 920px;
+  word-break: keep-all;
+}
+
+.story .lead {
+  font-size: clamp(17px, 2vw, 21px);
+  max-width: 760px;
+  color: var(--gray-700);
+}
+
+.story .scroll-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+  border-top: var(--border);
+  padding-top: 44px;
+}
+
+.story .stage-wrap {
+  position: sticky;
+  top: calc(var(--nav-h) + 28px);
+  min-height: calc(100vh - var(--nav-h) - 56px);
+  display: grid;
+  align-items: center;
+}
+
+.story .stage-card {
+  border: var(--border);
+  border-radius: var(--radius-panel);
+  background:
+    radial-gradient(circle at 20% 10%, color-mix(in oklch, var(--clay) 14%, transparent), transparent 36%),
+    var(--paper);
+  box-shadow: var(--shadow-lift);
+  padding: clamp(18px, 3vw, 28px);
+  overflow: hidden;
+}
+
+.story .stage-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+  margin-bottom: 20px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--gray-500);
+}
+
+.story .stage-meta strong {
+  color: var(--clay);
+  font-family: var(--sans);
+  font-size: 14px;
+}
+
+.story svg {
+  width: 100%;
+  aspect-ratio: 1.25;
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-panel);
+  background: color-mix(in oklch, var(--gray-100) 58%, var(--paper));
+}
+
+.story marker path {
+  fill: var(--clay);
+}
+
+.story .edge {
+  fill: none;
+  stroke: var(--clay);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  opacity: 0;
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+}
+
+.story .node circle {
+  fill: var(--paper);
+  stroke: var(--clay);
+  stroke-width: 1.4;
+}
+
+.story .node text {
+  text-anchor: middle;
+  font-family: var(--mono);
+  font-size: 4px;
+  fill: var(--slate);
+}
+
+.story .node {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.story .node.active,
+.story .edge.active {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .story .node.active {
+    animation: sticky-node-in 420ms ease both;
+  }
+
+  .story .edge.active {
+    animation: sticky-edge-in 680ms ease both;
+  }
+}
+
+@keyframes sticky-node-in {
+  from {
+    opacity: 0;
+    scale: 0.92;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes sticky-edge-in {
+  to {
+    opacity: 1;
+    stroke-dashoffset: 0;
+  }
+}
+
+.story .stage-alt,
+.story .inline-alt {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+.story .steps {
+  list-style: none;
+  margin: 0;
+  padding: 12vh 0 18vh;
+  display: grid;
+  gap: 28vh;
+}
+
+.story .steps li {
+  border: var(--border);
+  border-radius: var(--radius-panel);
+  background: color-mix(in oklch, var(--paper) 92%, var(--ivory));
+  padding: 24px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.story .steps li.current {
+  border-color: var(--clay);
+  box-shadow: 0 16px 36px color-mix(in oklch, var(--clay) 18%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .story .steps li.current {
+    transform: translateY(-2px);
+  }
+}
+
+.story .period {
+  display: inline-flex;
+  margin-bottom: 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--clay);
+}
+
+.story .steps h2 {
+  margin: 0 0 10px;
+}
+
+.story .steps p {
+  max-width: 54ch;
+}
+
+@media (max-width: 920px) {
+  .story .scroll-section {
+    grid-template-columns: 1fr;
+  }
+
+  .story .stage-wrap {
+    position: relative;
+    top: auto;
+    min-height: 0;
+  }
+
+  .story .steps {
+    padding-top: 0;
+    gap: 24px;
+  }
+}
+
+@media print {
+  .story .stage-wrap {
+    position: relative;
+    min-height: 0;
+  }
+
+  .story .steps {
+    gap: 18px;
+    padding: 24px 0;
+  }
+}

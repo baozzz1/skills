@@ -1,0 +1,200 @@
+/* HoloCard — extracted from the former scoped <style>.
+   Root class renamed .card -> .holo-card: global.css defines .card and
+   .card:hover { transform: translateY(-2px) } at (0,2,0), which under plain
+   (unscoped) CSS would win on specificity over a bare .card { transform:
+   perspective() } at (0,1,0) and flatten the holographic tilt. The rename is
+   the only order-independent fix. All child selectors are namespaced under
+   .holo-card to reproduce Svelte's former scope isolation. */
+.holo-card {
+  --pointer-x: 50%;
+  --pointer-y: 50%;
+  --pointer-from-center: 0;
+  --background-x: 50%;
+  --background-y: 50%;
+  --rotate-x: 0deg;
+  --rotate-y: 0deg;
+
+  position: relative;
+  display: grid;
+  min-height: 310px;
+  width: 100%;
+  overflow: hidden;
+  border: var(--border);
+  border-radius: calc(var(--radius-panel) + 8px);
+  background:
+    radial-gradient(circle at var(--background-x) var(--background-y), color-mix(in oklch, var(--clay) 18%, transparent), transparent 34%),
+    linear-gradient(135deg, color-mix(in oklch, var(--paper) 86%, var(--oat)), var(--paper));
+  color: var(--slate);
+  padding: 0;
+  text-align: left;
+  border-bottom: var(--border);
+  box-shadow: var(--shadow-lift);
+  transform-style: preserve-3d;
+  isolation: isolate;
+}
+
+.holo-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+}
+
+.holo-card.featured {
+  min-height: 350px;
+}
+
+.holo-card.gold {
+  background:
+    radial-gradient(circle at var(--background-x) var(--background-y), color-mix(in oklch, var(--clay) 22%, transparent), transparent 36%),
+    linear-gradient(135deg, color-mix(in oklch, var(--oat) 72%, var(--paper)), var(--paper));
+}
+
+.holo-card[data-mode='holo'] {
+  background:
+    radial-gradient(circle at var(--background-x) var(--background-y), color-mix(in oklch, var(--clay) 34%, transparent), transparent 32%),
+    conic-gradient(
+      from 130deg at var(--background-x) var(--background-y),
+      color-mix(in oklch, var(--clay) 36%, var(--paper)),
+      color-mix(in oklch, var(--info) 24%, var(--paper)),
+      color-mix(in oklch, var(--oat) 70%, var(--paper)),
+      color-mix(in oklch, var(--olive) 26%, var(--paper)),
+      color-mix(in oklch, var(--clay) 36%, var(--paper))
+    );
+}
+
+.holo-card[data-mode='holo']::after {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in oklch, var(--paper) 18%, transparent) 0 1px,
+      transparent 1px 4px
+    );
+  opacity: 0.28;
+  mix-blend-mode: overlay;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .holo-card {
+    transform: perspective(900px) rotateX(var(--rotate-x)) rotateY(var(--rotate-y));
+    transition: transform 180ms ease, border-color 180ms ease;
+  }
+
+  .holo-card:hover {
+    border-color: var(--clay);
+  }
+}
+
+.holo-card .shine,
+.holo-card .glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.holo-card .shine {
+  background:
+    linear-gradient(115deg, transparent 18%, color-mix(in oklch, var(--paper) 50%, transparent) 36%, transparent 48%),
+    radial-gradient(circle at var(--pointer-x) var(--pointer-y), color-mix(in oklch, var(--oat) 32%, transparent), transparent 42%);
+  opacity: calc(0.28 + var(--pointer-from-center) * 0.5);
+  mix-blend-mode: soft-light;
+}
+
+.holo-card[data-mode='holo'] .shine {
+  background:
+    conic-gradient(
+      from 90deg at var(--pointer-x) var(--pointer-y),
+      transparent,
+      color-mix(in oklch, var(--paper) 62%, transparent),
+      color-mix(in oklch, var(--clay) 42%, transparent),
+      transparent
+    ),
+    linear-gradient(115deg, transparent 20%, color-mix(in oklch, var(--paper) 64%, transparent) 42%, transparent 54%);
+  opacity: calc(0.42 + var(--pointer-from-center) * 0.62);
+  mix-blend-mode: color-dodge;
+}
+
+.holo-card .glare {
+  background: radial-gradient(circle at var(--pointer-x) var(--pointer-y), color-mix(in oklch, var(--paper) 48%, transparent), transparent 34%);
+  opacity: calc(0.16 + var(--pointer-from-center) * 0.3);
+}
+
+.holo-card .content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  align-content: end;
+  min-height: inherit;
+  padding: 24px;
+}
+
+.holo-card .icon {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid color-mix(in oklch, var(--clay) 34%, var(--gray-300));
+  border-radius: 14px;
+  background: color-mix(in oklch, var(--paper) 72%, var(--oat));
+  color: var(--clay);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.holo-card .title {
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1;
+  color: var(--slate);
+  margin-bottom: 12px;
+}
+
+.holo-card .subtitle {
+  display: block;
+  max-width: 28ch;
+  color: var(--gray-700);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.holo-card .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.holo-card .chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--gray-300);
+  padding: 5px 9px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gray-700);
+  background: color-mix(in oklch, var(--paper) 82%, var(--gray-100));
+}
+
+.holo-card .chip.clay { color: var(--clay); border-color: color-mix(in oklch, var(--clay) 42%, var(--gray-300)); }
+.holo-card .chip.olive { color: var(--olive); border-color: color-mix(in oklch, var(--olive) 42%, var(--gray-300)); }
+.holo-card .chip.rust { color: var(--rust); border-color: color-mix(in oklch, var(--rust) 42%, var(--gray-300)); }
+.holo-card .chip.info { color: var(--info); border-color: color-mix(in oklch, var(--info) 42%, var(--gray-300)); }
+.holo-card .chip.muted { color: var(--gray-500); }
+
+@media (prefers-reduced-motion: reduce) {
+  .holo-card .shine,
+  .holo-card .glare,
+  .holo-card::after {
+    display: none;
+  }
+}

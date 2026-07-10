@@ -28,7 +28,6 @@ const failures = [];
 
 await checkRequiredPaths();
 await checkSkillPathReferences();
-await checkSideEffectImports();
 await checkHexLiterals();
 await checkKernelDrift();
 await checkContentParity();
@@ -62,38 +61,6 @@ async function checkSkillPathReferences() {
   }
 }
 
-async function checkSideEffectImports() {
-  for (const archetype of ARCHETYPES) {
-    const referencePath = path.join(skillRoot, 'references', `${archetype}.md`);
-    const templatePath = path.join(skillRoot, 'templates', archetype);
-    if (!existsSync(referencePath) || !existsSync(templatePath)) continue;
-
-    const reference = await readFile(referencePath, 'utf8');
-    const components = referencedSvelteComponents(reference);
-    if (components.size === 0) continue;
-
-    const pageFiles = await listFiles(path.join(templatePath, 'src/pages'), (file) => file.endsWith('.astro'));
-    const pageSource = (await Promise.all(pageFiles.map((file) => readFile(file, 'utf8')))).join('\n');
-
-    for (const component of components) {
-      const escaped = component.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const sideEffectImport = new RegExp(`import\\s+['"]@/components/${escaped}['"];?`);
-      if (!sideEffectImport.test(pageSource)) {
-        failures.push(`${archetype}: missing page side-effect import for ${component}.`);
-      }
-    }
-  }
-}
-
-function referencedSvelteComponents(markdown) {
-  const components = new Set();
-  const re = /@\/components\/([A-Za-z0-9_-]+\.svelte)|`([A-Za-z0-9_-]+\.svelte)`/g;
-  for (const match of markdown.matchAll(re)) {
-    components.add(match[1] ?? match[2]);
-  }
-  return components;
-}
-
 async function checkHexLiterals() {
   const files = [];
   for (const archetype of ARCHETYPES) {
@@ -118,6 +85,8 @@ async function checkKernelDrift() {
     'tsconfig.json',
     'src/styles/tokens.css',
     'src/styles/global.css',
+    'src/styles/components/theme-toggle.css',
+    'src/styles/components/lang-toggle.css',
     'src/layouts/BaseLayout.astro',
     'src/i18n/lang.svelte.ts',
     'src/components/ThemeToggle.svelte',

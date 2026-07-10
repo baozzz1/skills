@@ -61,31 +61,7 @@
   <span class="label">{label}</span>
 </button>
 
-<style>
-  .theme-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    border: 1.5px solid var(--gray-300);
-    border-radius: 8px;
-    background: var(--paper);
-    color: var(--gray-700);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
-  }
-  .theme-toggle:hover {
-    border-color: var(--slate);
-    color: var(--slate);
-  }
-  .glyph {
-    font-size: 13px;
-    line-height: 1;
-    color: var(--clay);
-  }
-  @media (max-width: 600px) {
-    .label { display: none; }
-  }
-</style>
+<!-- Styles live in src/styles/components/theme-toggle.css, aggregated by
+     site.css. Scoped <style> was removed in the Svelte->React CSS-delivery
+     migration (spec 2026-07-10 §4). -->
+

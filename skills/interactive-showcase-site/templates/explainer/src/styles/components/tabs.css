@@ -1,0 +1,56 @@
+/* Tabs — extracted from the former scoped <style>. Non-root selectors
+   namespaced under .tabs-wrap. .panel is a §4.3 collision: global.css defines
+   .panel, and `.tabs-wrap .panel` (0,2,0) intentionally wins over it. The
+   former `:global(p)` selectors targeted MDX-rendered paragraphs; the :global()
+   wrapper is dropped because this file is already global. .tabs-wrap keeps its
+   bare root class so global.css's `.tabs-wrap pre:not(.astro-code)` rule for
+   MDX code still applies. */
+.tabs-wrap {
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  background: var(--paper);
+}
+/* Tablist as an explicit segmented control: each tab is a paper pill on a
+   subtle tray, so the user immediately reads them as buttons. */
+.tabs-wrap .tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--surface-subtle);
+  border-bottom: 1.5px solid var(--gray-300);
+}
+.tabs-wrap .tab {
+  flex: 0 1 auto;
+  min-width: 0;
+  padding: 7px 16px;
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  color: var(--gray-700);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+.tabs-wrap .tab:hover {
+  color: var(--slate);
+  border-color: var(--gray-500);
+}
+.tabs-wrap .tab.active {
+  background: color-mix(in oklch, var(--clay) 14%, var(--paper));
+  border-color: var(--clay);
+  color: var(--slate);
+  box-shadow: 0 0 0 1px var(--clay);
+}
+.tabs-wrap .panel {
+  padding: 18px 20px;
+}
+.tabs-wrap .panel > p:first-child { margin-top: 0; }
+.tabs-wrap .panel > p:last-child  { margin-bottom: 0; }
+
+@media (max-width: 600px) {
+  .tabs-wrap .tab { flex: 1 1 100%; }
+}
