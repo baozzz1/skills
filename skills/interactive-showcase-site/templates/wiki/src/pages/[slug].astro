@@ -1,11 +1,11 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import FlowGraph from '@/components/FlowGraph.svelte';
-import LangToggle from '@/components/LangToggle.svelte';
-import OnThisPage from '@/components/OnThisPage.svelte';
-import Sidebar from '@/components/Sidebar.svelte';
-import ThemeToggle from '@/components/ThemeToggle.svelte';
+import FlowGraph from '@/components/FlowGraph';
+import LangToggle from '@/components/LangToggle';
+import OnThisPage from '@/components/OnThisPage';
+import Sidebar from '@/components/Sidebar';
+import ThemeToggle from '@/components/ThemeToggle';
 import { categoryTree, graphForConcept, pageHeadings, previousNext } from '@/lib/atlas';
 
 export async function getStaticPaths() {
