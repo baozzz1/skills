@@ -88,9 +88,9 @@ async function checkKernelDrift() {
     'src/styles/components/theme-toggle.css',
     'src/styles/components/lang-toggle.css',
     'src/layouts/BaseLayout.astro',
-    'src/i18n/lang.svelte.ts',
-    'src/components/ThemeToggle.svelte',
-    'src/components/LangToggle.svelte'
+    'src/i18n/lang.ts',
+    'src/components/ThemeToggle.tsx',
+    'src/components/LangToggle.tsx'
   ];
 
   const entries = [];
