@@ -6,10 +6,21 @@ import {
   ARCHETYPES,
   compareKernelEntries,
   contentParity,
+  duplicatedComponentMismatches,
+  isSourceFile,
   missingRequiredPaths,
   requiredTemplatePaths,
-  scanHexLiterals
+  scanHexLiterals,
+  unaggregatedComponentStyles
 } from './lib/template-library-contracts.mjs';
+
+// Components duplicated verbatim across templates with no kernel-sync guard.
+// Extension-agnostic so this survives the Svelte -> React port: only the
+// filename changes here.
+const DUPLICATED_COMPONENTS = [
+  { file: 'CodeBlock', a: 'explainer', b: 'wiki' },
+  { file: 'Mermaid', a: 'explainer', b: 'wiki' }
+];
 
 const repoRoot = path.resolve(process.argv[2] ?? process.cwd());
 const skillRoot = path.join(repoRoot, 'skills/interactive-showcase-site');
@@ -21,6 +32,8 @@ await checkSideEffectImports();
 await checkHexLiterals();
 await checkKernelDrift();
 await checkContentParity();
+await checkStylesAggregated();
+await checkDuplicatedComponents();
 
 if (failures.length > 0) {
   console.error('Template library validation failed:');
@@ -157,6 +170,61 @@ async function checkContentParity() {
   }
 }
 
+// Component CSS files must be reachable through a page-level stylesheet import,
+// never only through an island's JS chunk. Assert every src/styles/components/
+// *.css is @imported by the template's site.css. Templates without a
+// components/ dir (e.g. before the CSS-extraction migration lands) are skipped.
+async function checkStylesAggregated() {
+  for (const archetype of ARCHETYPES) {
+    const stylesRoot = path.join(skillRoot, 'templates', archetype, 'src/styles');
+    const componentsRoot = path.join(stylesRoot, 'components');
+    const siteCssPath = path.join(stylesRoot, 'site.css');
+    if (!existsSync(componentsRoot)) continue;
+
+    if (!existsSync(siteCssPath)) {
+      failures.push(`${archetype}: src/styles/components exists but src/styles/site.css is missing.`);
+      continue;
+    }
+
+    const siteCss = await readFile(siteCssPath, 'utf8');
+    const componentCss = (await readdir(componentsRoot, { withFileTypes: true }))
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.css'))
+      .map((entry) => entry.name);
+
+    for (const missing of unaggregatedComponentStyles(siteCss, componentCss)) {
+      failures.push(`${archetype}: src/styles/components/${missing} is not @imported by site.css (orphan-CSS risk).`);
+    }
+  }
+}
+
+async function checkDuplicatedComponents() {
+  const componentsDir = (archetype) => path.join(skillRoot, 'templates', archetype, 'src/components');
+  const resolve = (archetype, file) => {
+    for (const ext of ['.tsx', '.jsx', '.svelte']) {
+      const candidate = path.join(componentsDir(archetype), `${file}${ext}`);
+      if (existsSync(candidate)) return candidate;
+    }
+    return null;
+  };
+
+  const pairs = [];
+  for (const { file, a, b } of DUPLICATED_COMPONENTS) {
+    const aPath = resolve(a, file);
+    const bPath = resolve(b, file);
+    if (!aPath || !bPath) continue;
+    pairs.push({
+      aPath: normalize(aPath),
+      aContent: await readFile(aPath, 'utf8'),
+      bPath: normalize(bPath),
+      bContent: await readFile(bPath, 'utf8')
+    });
+  }
+
+  for (const mismatch of duplicatedComponentMismatches(pairs)) {
+    failures.push(`Duplicated component drift: ${mismatch.aPath} differs from ${mismatch.bPath}.`);
+  }
+}
+
 async function listFiles(root, predicate) {
   if (!existsSync(root)) return [];
   const entries = await readdir(root, { withFileTypes: true });
@@ -171,10 +239,6 @@ async function listFiles(root, predicate) {
     }
   }
   return out;
-}
-
-function isSourceFile(file) {
-  return /\.(astro|svelte|css|ts|js|md|mdx)$/.test(file);
 }
 
 function normalize(file) {
