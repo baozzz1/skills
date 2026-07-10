@@ -1,8 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Hero from '@/components/Hero.svelte';
-import SectionNav from '@/components/SectionNav.svelte';
+import Hero from '@/components/Hero';
+import SectionNav from '@/components/SectionNav';
 
 const all = await getCollection('sections');
 const byOrder = (a: typeof all[number], b: typeof all[number]) =>

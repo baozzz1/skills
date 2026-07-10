@@ -1,9 +1,9 @@
 /* FlowGraph — extracted from the former scoped <style>. Non-root selectors
    namespaced under .graph-card. The former `.flow :global(.svelte-flow__*)`
-   selectors target Svelte Flow's injected DOM; the :global() wrapper is dropped
-   (this file is already global). The .svelte-flow__ class prefix is renamed to
-   .react-flow__ in Phase 4 when @xyflow/svelte -> @xyflow/react. Bare `ol`,
-   `button`, `span`, `h2` inside .text-equivalent / .details are namespaced. */
+   selectors targeted the flow library's injected DOM; the :global() wrapper is
+   dropped (this file is already global) and the class prefix is now
+   .react-flow__ (@xyflow/react). Bare `ol`, `button`, `span`, `h2` inside
+   .text-equivalent / .details are namespaced. */
 .graph-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
@@ -28,7 +28,7 @@
   outline-offset: 3px;
 }
 
-.graph-card .flow .svelte-flow__node {
+.graph-card .flow .react-flow__node {
   border: 1.5px solid var(--gray-300);
   border-radius: var(--radius-row);
   background: var(--paper);
@@ -38,25 +38,25 @@
   box-shadow: var(--shadow-lift);
 }
 
-.graph-card .flow .svelte-flow__node.selected,
-.graph-card .flow .svelte-flow__node:focus {
+.graph-card .flow .react-flow__node.selected,
+.graph-card .flow .react-flow__node:focus {
   border-color: var(--clay);
 }
 
-.graph-card .flow .svelte-flow__node.kind-decision {
+.graph-card .flow .react-flow__node.kind-decision {
   border-style: dashed;
 }
 
-.graph-card .flow .svelte-flow__node.kind-process {
+.graph-card .flow .react-flow__node.kind-process {
   border-radius: var(--radius-pill);
 }
 
-.graph-card .flow .svelte-flow__edge-path {
+.graph-card .flow .react-flow__edge-path {
   stroke: var(--clay);
   stroke-width: 1.8;
 }
 
-.graph-card .flow .svelte-flow__edge-text {
+.graph-card .flow .react-flow__edge-text {
   fill: var(--gray-700);
   font-family: var(--mono);
 }

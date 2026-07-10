@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
-import svelte from '@astrojs/svelte';
+import react from '@astrojs/react';
 
 // site / base are read from env so the template stays portable: when this
 // file ships unchanged inside a user's project, build defaults to base "/"
@@ -27,7 +27,7 @@ export default defineConfig({
   },
   integrations: [
     mdx(),
-    svelte()
+    react()
   ],
   markdown: {
     shikiConfig: {
