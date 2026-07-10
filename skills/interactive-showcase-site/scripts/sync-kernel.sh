@@ -15,9 +15,9 @@ for template in explainer scrollytelling cards wiki; do
   cp "$KERNEL/src/styles/components/theme-toggle.css" "$dest/src/styles/components/theme-toggle.css"
   cp "$KERNEL/src/styles/components/lang-toggle.css" "$dest/src/styles/components/lang-toggle.css"
   cp "$KERNEL/src/layouts/BaseLayout.astro" "$dest/src/layouts/BaseLayout.astro"
-  cp "$KERNEL/src/i18n/lang.svelte.ts" "$dest/src/i18n/lang.svelte.ts"
-  cp "$KERNEL/src/components/ThemeToggle.svelte" "$dest/src/components/ThemeToggle.svelte"
-  cp "$KERNEL/src/components/LangToggle.svelte" "$dest/src/components/LangToggle.svelte"
+  cp "$KERNEL/src/i18n/lang.ts" "$dest/src/i18n/lang.ts"
+  cp "$KERNEL/src/components/ThemeToggle.tsx" "$dest/src/components/ThemeToggle.tsx"
+  cp "$KERNEL/src/components/LangToggle.tsx" "$dest/src/components/LangToggle.tsx"
 done
 
 # site.css is deliberately NOT synced: each template @imports global.css plus a
