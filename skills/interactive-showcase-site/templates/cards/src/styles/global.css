@@ -391,7 +391,7 @@ pre.astro-code span {
 
 @media print {
   :root { --ivory: Canvas; --paper: Canvas; --slate: CanvasText; }
-  .section-nav, .section-toc, .theme-toggle, .copy-btn, .lifecycle-controls { display: none !important; }
+  .section-nav, .section-toc, .theme-toggle, .copy-btn, .ctrl { display: none !important; }
   body { background: var(--paper); color: var(--slate); }
   pre.astro-code { background: var(--gray-100) !important; color: var(--slate) !important; }
   .panel, .card { box-shadow: none !important; break-inside: avoid; }

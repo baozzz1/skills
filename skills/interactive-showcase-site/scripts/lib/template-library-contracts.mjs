@@ -1,7 +1,6 @@
 export const ARCHETYPES = ['explainer', 'scrollytelling', 'cards', 'wiki'];
 
 const HEX_COLOR_RE = /#[0-9a-fA-F]{3,8}\b/g;
-const SVELTE_HASH_RE = /svelte-(?=[a-z0-9]*\d)[a-z0-9]+/g;
 
 export function requiredTemplatePaths(root = 'skills/interactive-showcase-site') {
   return [
@@ -89,15 +88,6 @@ export function duplicatedComponentMismatches(pairs) {
   return pairs
     .filter((pair) => pair.aContent !== pair.bContent)
     .map((pair) => ({ aPath: pair.aPath, bPath: pair.bPath }));
-}
-
-export function extractSvelteHashes(content) {
-  return new Set(content.match(SVELTE_HASH_RE) ?? []);
-}
-
-export function missingSvelteHashes(htmlHashes, cssHashes) {
-  const css = new Set(cssHashes);
-  return [...htmlHashes].filter((hash) => !css.has(hash)).sort();
 }
 
 export function extractFrontmatter(content) {

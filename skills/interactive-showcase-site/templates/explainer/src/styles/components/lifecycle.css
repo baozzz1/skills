@@ -1,0 +1,126 @@
+/* Lifecycle — extracted from the former scoped <style>. Every non-root selector
+   is namespaced under .lifecycle. The play/pause control keeps its bare `.ctrl`
+   class so global.css's @media print rule (now correctly targeting .ctrl, see
+   the note there) can hide it in print. */
+.lifecycle {
+  background: var(--paper);
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-panel);
+  padding: 20px 22px;
+  margin: 0;
+}
+.lifecycle .lifecycle-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.lifecycle .ctrl {
+  padding: 5px 12px;
+  border: 1.5px solid var(--gray-300);
+  border-radius: 8px;
+  background: var(--ivory);
+  color: var(--gray-700);
+  font-family: var(--mono);
+  font-size: 11px;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.lifecycle .ctrl:hover { border-color: var(--slate); color: var(--slate); }
+.lifecycle .ctrl.playing { color: var(--clay); border-color: var(--clay); }
+
+.lifecycle .steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.lifecycle .step {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--gray-300);
+  border-radius: 8px;
+  background: var(--ivory);
+  color: var(--gray-700);
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.lifecycle .step:hover {
+  border-color: var(--gray-500);
+}
+.lifecycle .step.active {
+  background: color-mix(in oklch, var(--clay) 8%, var(--paper));
+  border-color: var(--clay);
+  color: var(--slate);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lifecycle .step.active { transform: translateY(-1px); }
+}
+
+.lifecycle .num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--clay);
+  font-weight: 600;
+}
+.lifecycle .label {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--slate);
+}
+.lifecycle .api {
+  font-size: 10.5px;
+  color: var(--gray-500);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.lifecycle .step-detail {
+  border-top: 1px solid var(--gray-100);
+  padding-top: 16px;
+}
+.lifecycle .step-detail-title {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 8px;
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--slate);
+}
+.lifecycle .num-large {
+  color: var(--clay);
+  font-size: 14px;
+  font-weight: 600;
+}
+.lifecycle .api-row {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 10px;
+}
+.lifecycle .desc {
+  margin: 0 0 12px;
+  color: var(--gray-700);
+  font-size: 15px;
+  line-height: 1.65;
+  max-width: 70ch;
+}
+.lifecycle .code {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border: 1px solid var(--code-border);
+  border-radius: var(--radius-row);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.55;
+  overflow-x: auto;
+}

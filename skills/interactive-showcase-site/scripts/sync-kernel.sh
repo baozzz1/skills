@@ -7,13 +7,19 @@ TEMPLATES="$ROOT/templates"
 
 for template in explainer scrollytelling cards wiki; do
   dest="$TEMPLATES/$template"
-  mkdir -p "$dest/src/styles" "$dest/src/layouts" "$dest/src/i18n" "$dest/src/components"
+  mkdir -p "$dest/src/styles/components" "$dest/src/layouts" "$dest/src/i18n" "$dest/src/components"
   cp "$KERNEL/.gitignore" "$dest/.gitignore"
   cp "$KERNEL/tsconfig.json" "$dest/tsconfig.json"
   cp "$KERNEL/src/styles/tokens.css" "$dest/src/styles/tokens.css"
   cp "$KERNEL/src/styles/global.css" "$dest/src/styles/global.css"
+  cp "$KERNEL/src/styles/components/theme-toggle.css" "$dest/src/styles/components/theme-toggle.css"
+  cp "$KERNEL/src/styles/components/lang-toggle.css" "$dest/src/styles/components/lang-toggle.css"
   cp "$KERNEL/src/layouts/BaseLayout.astro" "$dest/src/layouts/BaseLayout.astro"
   cp "$KERNEL/src/i18n/lang.svelte.ts" "$dest/src/i18n/lang.svelte.ts"
   cp "$KERNEL/src/components/ThemeToggle.svelte" "$dest/src/components/ThemeToggle.svelte"
   cp "$KERNEL/src/components/LangToggle.svelte" "$dest/src/components/LangToggle.svelte"
 done
+
+# site.css is deliberately NOT synced: each template @imports global.css plus a
+# different set of component stylesheets, so its @import list is template-owned.
+# checkStylesAggregated (validate-template-library.mjs) guards it instead.

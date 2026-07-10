@@ -1,0 +1,10 @@
+/* site.css — page-level aggregation point (template-owned, NOT kernel-synced).
+   Imported once by BaseLayout so every component stylesheet is reachable via a
+   static import graph and can never be orphaned into an island-only JS chunk.
+   Order matters: global.css first, component CSS after, so a component rule
+   wins a specificity tie against a global rule of equal weight. */
+@import './global.css';
+@import './components/theme-toggle.css';
+@import './components/lang-toggle.css';
+@import './components/holo-card.css';
+@import './components/holo-card-grid.css';

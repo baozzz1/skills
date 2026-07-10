@@ -86,6 +86,3 @@ jobs:
           # asset-URL regressions before merge.
           BASE_PATH: /skills/
           SITE_URL: https://baozzz1.github.io
-
-      - name: Check Svelte CSS coverage
-        run: bun ../../scripts/check-svelte-css.mjs .

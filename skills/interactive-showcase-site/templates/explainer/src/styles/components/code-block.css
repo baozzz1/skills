@@ -1,0 +1,77 @@
+/* CodeBlock — extracted from the former scoped <style>. Duplicated verbatim in
+   explainer and wiki (checkDuplicatedComponents guards the pair). Non-root
+   selectors namespaced under .code-block; bare `pre` / `pre code` would style
+   every code block on the page otherwise. .copy-btn keeps its bare class on the
+   element so global.css's @media print rule still hides it. */
+.code-block {
+  position: relative;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border: 1px solid var(--code-border);
+  border-radius: var(--radius-row);
+  overflow: hidden;
+  margin: 0;
+}
+.code-block .code-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--code-bg-soft);
+  border-bottom: 1px solid var(--code-border);
+  font-size: 11px;
+  color: var(--code-fg-dim);
+}
+.code-block .title {
+  color: var(--code-fg);
+  font-weight: 500;
+}
+.code-block .spacer { flex: 1; }
+.code-block .lang {
+  color: var(--code-deco);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.code-block pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--code-fg);
+  background: transparent;
+}
+.code-block pre code {
+  color: inherit;
+  background: transparent;
+  font: inherit;
+}
+.code-block .copy-btn {
+  border: 1px solid var(--code-border);
+  background: var(--code-bg-soft);
+  color: var(--code-fg-dim);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 11px;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.code-block .copy-btn:hover {
+  color: var(--code-fg);
+  border-color: var(--code-fg-dim);
+}
+.code-block .copy-btn.copied {
+  color: var(--olive);
+  border-color: var(--olive);
+}
+.code-block .copy-btn.selected {
+  color: var(--info);
+  border-color: var(--info);
+}
+.code-block .copy-btn.floating {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}

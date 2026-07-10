@@ -1,0 +1,43 @@
+/* OnThisPage — extracted from the former scoped <style>. Bare h2/ol/a element
+   selectors are namespaced under .toc so they don't restyle every heading,
+   list, and link on the page. */
+.toc {
+  position: sticky;
+  top: calc(var(--nav-h) + 24px);
+  align-self: start;
+  color: var(--gray-500);
+}
+
+.toc h2 {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+}
+
+.toc ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.toc a {
+  border-bottom: 0;
+  color: var(--gray-500);
+  font-size: 13px;
+}
+
+.toc a[aria-current='true'],
+.toc a:hover {
+  color: var(--clay);
+}
+
+@media (max-width: 1180px) {
+  .toc {
+    display: none;
+  }
+}

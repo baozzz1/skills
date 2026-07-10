@@ -1,0 +1,197 @@
+/* SectionNav — extracted from the former scoped <style>. The component renders
+   two sibling roots: <nav class="section-nav"> (sticky bar) and
+   <aside class="section-toc"> (fixed right rail). BOTH root class names are
+   load-bearing: global.css's @media print rule hides .section-nav and
+   .section-toc by those bare names, so they stay unprefixed. Every child
+   selector is namespaced under whichever root it belongs to (.brand, .bar,
+   .actions in particular are generic names index.astro pages also use). */
+.section-nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: var(--nav-h);
+  background: color-mix(in oklch, var(--ivory) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--gray-100);
+}
+.section-nav .bar {
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.section-nav .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--slate);
+  border-bottom: 0;
+  flex: 0 0 auto;
+}
+.section-nav .brand:hover { color: var(--clay); }
+.section-nav .brand-mark {
+  color: var(--clay);
+  font-size: 16px;
+}
+.section-nav .brand-title {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+}
+.section-nav .actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: 0 0 auto;
+}
+.section-nav .mobile-current {
+  display: inline-flex;
+  align-items: center;
+  max-width: min(44vw, 280px);
+  padding: 6px 12px;
+  border: 1.5px solid var(--gray-300);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--slate);
+  font-family: var(--sans);
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.section-nav .mobile-current .caret { font-size: 10px; color: var(--gray-500); margin-left: 4px; }
+.section-nav .mobile-menu {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 10px;
+  padding-bottom: 12px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--gray-100);
+}
+.section-nav .mobile-menu a {
+  display: block;
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: var(--gray-700);
+  font-family: var(--sans);
+  font-size: 14px;
+  border-bottom: 0;
+}
+.section-nav .mobile-menu a.active {
+  color: var(--slate);
+  background: var(--surface-pill);
+}
+.section-nav .mobile-menu a.in-section {
+  color: var(--slate);
+}
+.section-nav .mobile-menu a.child {
+  margin-left: 14px;
+  color: var(--gray-500);
+  font-size: 13px;
+}
+.section-nav .mobile-menu a.child.depth-3 { margin-left: 26px; }
+
+.section-toc {
+  display: none;
+}
+.section-toc .toc-card {
+  background: color-mix(in oklch, var(--paper) 94%, transparent);
+  border: var(--border);
+  border-radius: var(--radius-row);
+  padding: 12px;
+  box-shadow: var(--shadow-lift);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.section-toc .toc-top {
+  display: block;
+  padding: 4px 8px 10px;
+  margin-bottom: 6px;
+  color: var(--slate);
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.25;
+  border-bottom: 1px solid var(--gray-100);
+}
+.section-toc .toc-list,
+.section-toc .toc-children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.section-toc .toc-list {
+  display: grid;
+  gap: 3px;
+}
+.section-toc .toc-list a {
+  display: block;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--gray-700);
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.3;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.section-toc .toc-list a:hover {
+  color: var(--slate);
+  background: var(--gray-100);
+}
+.section-toc .toc-list a.active {
+  color: var(--slate);
+  background: var(--surface-pill);
+  box-shadow: inset 2px 0 0 var(--clay);
+}
+/* Parent of the active subheading: keep weight but no fill, so the
+   active highlight stays attached to the actual sub-heading the user
+   is reading. */
+.section-toc .toc-list a.in-section {
+  color: var(--slate);
+}
+.section-toc .toc-children {
+  margin: 2px 0 4px 10px;
+  padding-left: 8px;
+  border-left: 1px solid var(--gray-100);
+}
+.section-toc .toc-children a {
+  color: var(--gray-500);
+  font-size: 12.5px;
+}
+.section-toc .toc-children a.depth-3 {
+  padding-left: 18px;
+}
+
+@media (min-width: 1120px) {
+  .section-nav .mobile-current { display: none; }
+  .section-toc {
+    display: block;
+    position: fixed;
+    z-index: 20;
+    top: calc(var(--nav-h) + 24px);
+    right: max(28px, calc((100vw - (var(--content-max) + 280px)) / 2 + 28px));
+    width: 236px;
+    max-height: calc(100vh - var(--nav-h) - 48px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+}
+
+@media (max-width: 1119px) {
+  .section-nav .mobile-menu { display: flex; }
+}
+
+@media (max-width: 520px) {
+  .section-nav .bar { gap: 8px; }
+  .section-nav .brand-title { display: none; }
+  .section-nav .actions { gap: 6px; }
+  .section-nav .mobile-current {
+    max-width: 34vw;
+    padding-inline: 10px;
+  }
+}

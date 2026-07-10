@@ -4,10 +4,8 @@ import {
   contentParity,
   duplicatedComponentMismatches,
   extractCssImports,
-  extractSvelteHashes,
   isSourceFile,
   missingRequiredPaths,
-  missingSvelteHashes,
   requiredTemplatePaths,
   scanHexLiterals,
   unaggregatedComponentStyles
@@ -194,18 +192,3 @@ describe('duplicated component drift', () => {
   });
 });
 
-describe('svelte hash extraction', () => {
-  test('passes when html hashes exist in css', () => {
-    const htmlHashes = extractSvelteHashes('<div class="card svelte-abc123"></div>');
-    const cssHashes = extractSvelteHashes('.card.svelte-abc123{display:block}');
-
-    expect(missingSvelteHashes(htmlHashes, cssHashes)).toEqual([]);
-  });
-
-  test('reports html-only hashes', () => {
-    const htmlHashes = extractSvelteHashes('<div class="card svelte-abc123 svelte-def456"></div>');
-    const cssHashes = extractSvelteHashes('.card.svelte-abc123{display:block}');
-
-    expect(missingSvelteHashes(htmlHashes, cssHashes)).toEqual(['svelte-def456']);
-  });
-});

@@ -1,0 +1,175 @@
+/* Mermaid — extracted from the former scoped <style>. Duplicated verbatim in
+   explainer and wiki (checkDuplicatedComponents guards the pair). Every
+   non-root selector is namespaced under .mermaid-shell. The former
+   `.canvas :global(...)` selectors targeted mermaid-injected SVG nodes (which
+   carried no Svelte scope hash); the :global() wrapper is dropped because this
+   file is already global, and the descendant chain
+   `.mermaid-shell .canvas <injected>` reaches them. @keyframes mm-spin keeps its
+   name — the mm- prefix already namespaces it. */
+.mermaid-shell {
+  background: var(--paper);
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-panel);
+  padding: 18px 20px;
+  margin: 0;
+}
+.mermaid-shell .title {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gray-500);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.mermaid-shell .canvas {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 0 8px;
+}
+/* Reserve enough vertical room while mermaid loads so the section
+   does not visually collapse to a single line of placeholder text. */
+.mermaid-shell .canvas.is-loading,
+.mermaid-shell .canvas.has-error {
+  min-height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mermaid-shell .canvas svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+.mermaid-shell .canvas g.node.mm-clickable {
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+.mermaid-shell .canvas g.node.mm-clickable:hover rect,
+.mermaid-shell .canvas g.node.mm-clickable:hover polygon,
+.mermaid-shell .canvas g.node.mm-clickable:hover ellipse,
+.mermaid-shell .canvas g.node.mm-clickable:hover circle {
+  filter: brightness(0.97);
+  stroke-width: 2px;
+}
+/* Suppress the platform default focus outline (blue on most browsers) so
+   it never lands on top of our clay accent. Express selection via the
+   node's own stroke + fill instead — same visual language as the active
+   Tab pill, so the "selected step" reading is consistent across the
+   Lifecycle / Mermaid / Tabs trio. */
+.mermaid-shell .canvas g.node.mm-clickable {
+  outline: none;
+}
+.mermaid-shell .canvas g.node.mm-clickable:focus-visible rect,
+.mermaid-shell .canvas g.node.mm-clickable:focus-visible polygon,
+.mermaid-shell .canvas g.node.mm-clickable:focus-visible ellipse,
+.mermaid-shell .canvas g.node.mm-clickable:focus-visible circle,
+.mermaid-shell .canvas g.node.mm-clickable:focus-visible path {
+  stroke: var(--clay) !important;
+  stroke-width: 2px !important;
+}
+/* "hot" node accent — author-marked via `class <id> hot;`. Same accent
+   used for the runtime "mm-selected" class (set when the user clicks a
+   node) so the highlighted node and the user's current focus share one
+   visual language. */
+.mermaid-shell .canvas g.node.hot rect,
+.mermaid-shell .canvas g.node.hot polygon,
+.mermaid-shell .canvas g.node.hot ellipse,
+.mermaid-shell .canvas g.node.hot circle,
+.mermaid-shell .canvas g.node.hot path,
+.mermaid-shell .canvas g.node.mm-selected rect,
+.mermaid-shell .canvas g.node.mm-selected polygon,
+.mermaid-shell .canvas g.node.mm-selected ellipse,
+.mermaid-shell .canvas g.node.mm-selected circle,
+.mermaid-shell .canvas g.node.mm-selected path {
+  fill: var(--mm-hot-fill) !important;
+  stroke: var(--mm-hot-stroke) !important;
+  stroke-width: 2px !important;
+}
+.mermaid-shell .canvas g.node.hot .nodeLabel,
+.mermaid-shell .canvas g.node.hot foreignObject *,
+.mermaid-shell .canvas g.node.hot text,
+.mermaid-shell .canvas g.node.mm-selected .nodeLabel,
+.mermaid-shell .canvas g.node.mm-selected foreignObject *,
+.mermaid-shell .canvas g.node.mm-selected text {
+  color: var(--mm-hot-text) !important;
+  fill: var(--mm-hot-text) !important;
+}
+.mermaid-shell .placeholder,
+.mermaid-shell .error {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 22px;
+  border-radius: var(--radius-row);
+  background: var(--surface-subtle);
+  border: 1px dashed var(--gray-300);
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--gray-500);
+}
+.mermaid-shell .error {
+  color: var(--rust);
+  border-color: color-mix(in oklch, var(--rust) 35%, var(--gray-300));
+  background: color-mix(in oklch, var(--rust) 6%, var(--paper));
+}
+.mermaid-shell .spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in oklch, var(--gray-500) 35%, transparent);
+  border-top-color: var(--clay);
+  animation: mm-spin 0.8s linear infinite;
+}
+@keyframes mm-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mermaid-shell .spinner { animation: none; border-top-color: var(--gray-500); }
+}
+.mermaid-shell .legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 8px 0 4px;
+  border-top: 1px solid var(--gray-100);
+  font-size: 12px;
+  color: var(--gray-700);
+}
+.mermaid-shell .legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.mermaid-shell .swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid var(--gray-300);
+}
+.mermaid-shell .node-detail {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--gray-100);
+  border-radius: var(--radius-row);
+  border-left: 3px solid var(--clay);
+}
+.mermaid-shell .node-detail.is-empty { border-left-color: var(--gray-300); }
+.mermaid-shell .hint {
+  color: var(--gray-500);
+  font-size: 13px;
+  font-style: italic;
+}
+.mermaid-shell .d-title {
+  display: block;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  color: var(--slate);
+  margin-bottom: 4px;
+}
+.mermaid-shell .d-body {
+  margin: 0;
+  color: var(--gray-700);
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 70ch;
+}

@@ -49,45 +49,4 @@
   </ol>
 </nav>
 
-<style>
-  .toc {
-    position: sticky;
-    top: calc(var(--nav-h) + 24px);
-    align-self: start;
-    color: var(--gray-500);
-  }
-
-  h2 {
-    margin: 0 0 10px;
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--gray-500);
-  }
-
-  ol {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 6px;
-  }
-
-  a {
-    border-bottom: 0;
-    color: var(--gray-500);
-    font-size: 13px;
-  }
-
-  a[aria-current='true'],
-  a:hover {
-    color: var(--clay);
-  }
-
-  @media (max-width: 1180px) {
-    .toc {
-      display: none;
-    }
-  }
-</style>
+<!-- Styles: src/styles/components/on-this-page.css (aggregated by site.css). -->

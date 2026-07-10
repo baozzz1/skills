@@ -1,0 +1,23 @@
+/* HoloCardGrid — extracted from the former scoped <style>.
+   Root class renamed .grid -> .holo-grid: .grid is too generic to be safe as a
+   global selector. The perspective here establishes the 3D context the child
+   .holo-card tilt renders into. */
+.holo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+  align-items: stretch;
+  perspective: 1200px;
+}
+
+@media (max-width: 1120px) {
+  .holo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .holo-grid {
+    grid-template-columns: 1fr;
+  }
+}

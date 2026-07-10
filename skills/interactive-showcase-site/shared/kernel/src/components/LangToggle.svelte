@@ -38,36 +38,7 @@
   <span class="next" aria-hidden="true">{nextGlyph}</span>
 </button>
 
-<style>
-  .lang-toggle {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 4px;
-    padding: 6px 10px;
-    border: 1.5px solid var(--gray-300);
-    border-radius: 8px;
-    background: var(--paper);
-    color: var(--gray-700);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
-  }
-  .lang-toggle:hover {
-    border-color: var(--slate);
-    color: var(--slate);
-  }
-  .current {
-    color: var(--clay);
-    font-weight: 600;
-    font-size: 12px;
-  }
-  .sep {
-    color: var(--gray-500);
-    font-size: 11px;
-  }
-  .next {
-    color: var(--gray-500);
-    font-size: 11px;
-  }
-</style>
+<!-- Styles live in src/styles/components/lang-toggle.css, aggregated by
+     site.css. Scoped <style> was removed in the Svelte->React CSS-delivery
+     migration (spec 2026-07-10 §4). -->
+
