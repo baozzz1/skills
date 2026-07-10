@@ -2,11 +2,15 @@ import { describe, expect, test } from 'bun:test';
 import {
   compareKernelEntries,
   contentParity,
+  duplicatedComponentMismatches,
+  extractCssImports,
   extractSvelteHashes,
+  isSourceFile,
   missingRequiredPaths,
   missingSvelteHashes,
   requiredTemplatePaths,
-  scanHexLiterals
+  scanHexLiterals,
+  unaggregatedComponentStyles
 } from './template-library-contracts.mjs';
 
 describe('required template paths', () => {
@@ -113,6 +117,80 @@ describe('content parity', () => {
       missing: [{ id: 'only-en', missingLang: 'zh' }],
       orderMismatches: [{ id: 'overview', enOrder: 1, zhOrder: 2 }]
     });
+  });
+});
+
+describe('source file classification', () => {
+  test('classifies React and framework source extensions', () => {
+    expect(isSourceFile('src/components/HoloCard.tsx')).toBe(true);
+    expect(isSourceFile('src/components/HoloCard.jsx')).toBe(true);
+    expect(isSourceFile('src/components/HoloCard.svelte')).toBe(true);
+    expect(isSourceFile('src/styles/global.css')).toBe(true);
+    expect(isSourceFile('src/lib/cards.ts')).toBe(true);
+    expect(isSourceFile('src/pages/index.astro')).toBe(true);
+    expect(isSourceFile('src/content/en/01.mdx')).toBe(true);
+  });
+
+  test('rejects non-source files so they escape the hex scan intentionally', () => {
+    expect(isSourceFile('bun.lock')).toBe(false);
+    expect(isSourceFile('dist/_astro/index.abc.css')).toBe(true); // .css is source; path filtering is the caller's job
+    expect(isSourceFile('public/favicon.svg')).toBe(false);
+    expect(isSourceFile('package.json')).toBe(false);
+  });
+});
+
+describe('css import aggregation', () => {
+  test('extracts single-quote, double-quote, and url() imports', () => {
+    const css = [
+      "@import './global.css';",
+      '@import "./components/holo-card.css";',
+      '@import url(./components/theme-toggle.css);'
+    ].join('\n');
+    expect(extractCssImports(css)).toEqual(new Set([
+      './global.css',
+      './components/holo-card.css',
+      './components/theme-toggle.css'
+    ]));
+  });
+
+  test('reports component styles not imported by site.css', () => {
+    const siteCss = "@import './global.css';\n@import './components/holo-card.css';\n";
+    const missing = unaggregatedComponentStyles(siteCss, ['holo-card.css', 'lang-toggle.css', 'theme-toggle.css']);
+    expect(missing).toEqual(['lang-toggle.css', 'theme-toggle.css']);
+  });
+
+  test('passes when every component style is aggregated', () => {
+    const siteCss = "@import './components/a.css';\n@import './components/b.css';\n";
+    expect(unaggregatedComponentStyles(siteCss, ['a.css', 'b.css'])).toEqual([]);
+  });
+});
+
+describe('duplicated component drift', () => {
+  test('passes byte-identical copies', () => {
+    expect(duplicatedComponentMismatches([
+      {
+        aPath: 'templates/explainer/src/components/Mermaid.tsx',
+        aContent: 'x\n',
+        bPath: 'templates/wiki/src/components/Mermaid.tsx',
+        bContent: 'x\n'
+      }
+    ])).toEqual([]);
+  });
+
+  test('reports drift between copies that must stay identical', () => {
+    expect(duplicatedComponentMismatches([
+      {
+        aPath: 'templates/explainer/src/components/CodeBlock.tsx',
+        aContent: 'x\n',
+        bPath: 'templates/wiki/src/components/CodeBlock.tsx',
+        bContent: 'y\n'
+      }
+    ])).toEqual([
+      {
+        aPath: 'templates/explainer/src/components/CodeBlock.tsx',
+        bPath: 'templates/wiki/src/components/CodeBlock.tsx'
+      }
+    ]);
   });
 });
 

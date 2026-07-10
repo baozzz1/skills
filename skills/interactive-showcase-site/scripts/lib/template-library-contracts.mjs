@@ -56,6 +56,41 @@ export function compareKernelEntries(entries) {
     }));
 }
 
+const SOURCE_FILE_RE = /\.(astro|svelte|tsx|jsx|css|ts|js|md|mdx)$/;
+
+// Which files the hex-discipline scan collects. Exported (not buried in the
+// validator) so the tsx/jsx inclusion is unit-tested: without it, hard-coded
+// colours in React components silently escape the tokens-only rule.
+export function isSourceFile(file) {
+  return SOURCE_FILE_RE.test(file);
+}
+
+const CSS_IMPORT_RE = /@import\s+(?:url\(\s*)?['"]?([^'")\s;]+)['"]?\s*\)?\s*;?/g;
+
+export function extractCssImports(content) {
+  return new Set([...content.matchAll(CSS_IMPORT_RE)].map((match) => match[1]));
+}
+
+// Component CSS is only orphan-proof if a page-level stylesheet @imports it.
+// Given site.css content and the component stylesheet basenames present on
+// disk, return the basenames site.css forgot to import. Replaces the whole
+// svelte-<hash> orphan-detection tooling class.
+export function unaggregatedComponentStyles(siteCssContent, componentCssBasenames) {
+  const imported = new Set(
+    [...extractCssImports(siteCssContent)].map((target) => target.split('/').pop())
+  );
+  return componentCssBasenames.filter((name) => !imported.has(name)).sort();
+}
+
+// CodeBlock and Mermaid are duplicated verbatim across explainer and wiki with
+// no kernel-sync guard (they are template-local, not kernel files). Assert the
+// copies stay byte-identical.
+export function duplicatedComponentMismatches(pairs) {
+  return pairs
+    .filter((pair) => pair.aContent !== pair.bContent)
+    .map((pair) => ({ aPath: pair.aPath, bPath: pair.bPath }));
+}
+
 export function extractSvelteHashes(content) {
   return new Set(content.match(SVELTE_HASH_RE) ?? []);
 }
