@@ -10,7 +10,7 @@
 
 The design goal is not a generic docs portal. It is a focused, editorial artifact that picks the interaction model that best matches how a reader should move through the material: scan one system, follow one evolution, browse a premium collection, or explore related concepts.
 
-All templates share the same visual kernel: warm paper-like neutrals, clay/coral accents, serif editorial hierarchy, self-hosted Source Serif 4 / IBM Plex Sans / JetBrains Mono, tokenized light/dark theme, bilingual EN/ZH switching, reduced-motion support, and no generic AI-slop tropes.
+All templates share the same visual kernel: warm paper-like neutrals, clay/coral accents, serif editorial hierarchy, self-hosted Newsreader / IBM Plex Sans / JetBrains Mono, tokenized light/dark theme, bilingual EN/ZH switching, reduced-motion support, and no generic AI-slop tropes.
 
 ## Installation
 
