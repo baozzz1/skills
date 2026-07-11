@@ -10,7 +10,7 @@
 
 它的目标不是做通用文档门户，而是做一份聚焦的、带编辑感的技术 artifact，并根据读者应该如何移动来选择交互模型：扫读一个系统、跟随一次演进、浏览一组高质感对象，或探索一组互相关联的概念。
 
-所有模板共享同一套视觉内核：温暖纸张底色、clay/coral 强调色、serif 编辑层级、自托管 Source Serif 4 / IBM Plex Sans / JetBrains Mono、token 化 light/dark theme、中英双语切换、reduced-motion 支持，以及避免通用 AI slop 视觉套路。
+所有模板共享同一套视觉内核：温暖纸张底色、clay/coral 强调色、serif 编辑层级、自托管 Newsreader / IBM Plex Sans / JetBrains Mono、token 化 light/dark theme、中英双语切换、reduced-motion 支持，以及避免通用 AI slop 视觉套路。
 
 ## 安装
 

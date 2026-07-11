@@ -17,15 +17,19 @@
  * fonts per Anthropic's design guidance; we self-host via @fontsource-variable.
  * ===========================================================================*/
 
-@import '@fontsource-variable/source-serif-4';
+@import '@fontsource-variable/newsreader/opsz.css';
+@import '@fontsource-variable/newsreader/opsz-italic.css';
 @import '@fontsource-variable/ibm-plex-sans';
 @import '@fontsource-variable/jetbrains-mono';
 
 :root {
   /* ---------- Brand palette (light is default) -------------------------- */
-  --ivory: #FBFAF6;        /* page background — paper-warm, slight cream lift */
-  --paper: #FFFFFF;        /* surface / panel / card */
-  --slate: #141413;        /* hero text, hot accents on neutrals */
+  /* Paper is warm PORCELAIN, not the near-#F4F1EA cozy cream default: a
+     greyer, less-pink undertone reads as conservation-grade stock, not a
+     generic AI-editorial cream. Ink is warm espresso, never pure black. */
+  --ivory: #F1EFE8;        /* page background — warm porcelain, toned off-white */
+  --paper: #FBF9F4;        /* surface / panel / card — lifts warmly off the page */
+  --slate: #231C15;        /* display ink — warm espresso, not near-black */
   --clay: #D97757;         /* THE accent. Use sparingly. */
   --clay-d: #B85C3E;       /* clay pressed/active */
   --oat: #E3DACC;          /* warm tinted region — section dividers, callouts */
@@ -33,10 +37,10 @@
   --rust: #B04A3F;         /* danger, attention */
   --info: #5C7CA3;         /* informational, neutral note */
 
-  --gray-100: #F0EEE6;
-  --gray-300: #D4D2C8;
-  --gray-500: #87867F;
-  --gray-700: #3D3D3A;
+  --gray-100: #E9E6DD;     /* subtle fill — sits just under the page */
+  --gray-300: #D2CEC3;     /* warm hairline / border */
+  --gray-500: #86827A;     /* muted labels */
+  --gray-700: #443F38;     /* body ink — warm dark */
 
   /* ---------- Surface affordances (docs-style) -------------------------- */
   --surface-subtle:  color-mix(in oklch, var(--gray-100) 60%, var(--paper));
@@ -53,8 +57,8 @@
    * Verify by toggling theme: code-bg should always be one step DEEPER
    * than --paper, never inverted.
    * ------------------------------------------------------------------- */
-  --code-bg:        #F2EFE6;
-  --code-bg-soft:   #F8F6EF;
+  --code-bg:        #EBE7DC;
+  --code-bg-soft:   #F2EEE4;
   --code-border:    rgba(20, 20, 19, 0.10);
   --code-fg:        #2D2B27;
   --code-fg-dim:    #5A574F;
@@ -78,7 +82,7 @@
 
   /* ---------- Typography stacks ----------------------------------------- */
   /* Latin first, CJK fallback. Self-hosted variable fonts via @fontsource. */
-  --serif-latin: 'Source Serif 4 Variable', ui-serif, Georgia, serif;
+  --serif-latin: 'Newsreader Variable', ui-serif, Georgia, serif;
   --serif-cjk:   'Songti SC', 'Source Han Serif SC', 'Noto Serif CJK SC', serif;
   --sans-latin:  'IBM Plex Sans Variable', ui-sans-serif, sans-serif;
   --sans-cjk:    'PingFang SC', 'Source Han Sans SC', 'Noto Sans CJK SC', sans-serif;

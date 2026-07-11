@@ -113,6 +113,20 @@ code, .mono, .path, .metric {
   display: inline-block;
 }
 
+/* Signature — the clay index tick. A short clay bar prefixes every "you are
+   here" label (hero eyebrow, section eyebrow) as the family fingerprint shared
+   across all four templates. Kept to position markers only, never decoration. */
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 0.82em;
+  margin-right: 8px;
+  vertical-align: -0.08em;
+  background: var(--clay);
+  border-radius: 1px;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -189,15 +203,23 @@ main {
   text-transform: uppercase;
   color: var(--clay);
   margin: 0 0 10px;
-  padding-bottom: 4px;
-  border-bottom: 1.5px solid color-mix(in oklch, var(--clay) 35%, transparent);
+}
+.section-eyebrow::before {
+  content: '';
+  flex: none;
+  width: 3px;
+  height: 0.9em;
+  background: var(--clay);
+  border-radius: 1px;
 }
 
 .section-title {
-  font-family: var(--sans);
-  font-size: clamp(26px, 3vw, 34px);
-  letter-spacing: -0.01em;
-  line-height: 1.2;
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-weight: 560;
+  font-size: clamp(27px, 3vw, 36px);
+  letter-spacing: -0.012em;
+  line-height: 1.15;
   margin: 0 0 6px;
 }
 
