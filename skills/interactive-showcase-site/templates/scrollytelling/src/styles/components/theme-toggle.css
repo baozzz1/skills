@@ -1,8 +1,7 @@
-/* ThemeToggle — extracted from the component's former scoped <style>.
-   Child selectors are namespaced under .theme-toggle to reproduce the
-   isolation Svelte's scope hash used to provide (.glyph / .label are generic
-   names other components also use). The .theme-toggle bare class name is
-   load-bearing: global.css's @media print rule hides it by that name. */
+/* ThemeToggle — component styles. Child selectors are namespaced under
+   .theme-toggle to keep the generic .glyph / .label names (used by other
+   components too) isolated. The .theme-toggle bare class name is load-bearing:
+   global.css's @media print rule hides it by that name. */
 .theme-toggle {
   display: inline-flex;
   align-items: center;

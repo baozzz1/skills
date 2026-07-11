@@ -3,9 +3,9 @@
  *
  * - Theme aware: reads CSS variables -> mermaid.themeVariables.
  * - Re-renders when [data-theme] flips (mermaid bakes theme into the SVG).
- * - Click handlers are wired AFTER the SVG lands in the DOM. In React setState
- *   is async, so — unlike Svelte's queueMicrotask — binding must happen in an
- *   effect keyed on the rendered SVG, not right after setSvgHtml.
+ * - Click handlers are wired AFTER the SVG lands in the DOM. setState is async,
+ *   so binding must happen in an effect keyed on the rendered SVG, not right
+ *   after setSvgHtml (the DOM is not updated synchronously).
  *
  * Duplicated verbatim in explainer and wiki (checkDuplicatedComponents guards
  * the pair). Styles: src/styles/components/mermaid.css.

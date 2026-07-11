@@ -1,6 +1,6 @@
 # Interactive Showcase Site
 
-> Route a README, SDK, docs folder, timeline, card set, or concept map to the right bilingual interactive Astro + Svelte template.
+> Route a README, SDK, docs folder, timeline, card set, or concept map to the right bilingual interactive Astro + React template.
 
 [简体中文](README.zh.md) · [Live preview ↗](https://baozzz1.github.io/skills/)
 

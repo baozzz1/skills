@@ -52,12 +52,12 @@ describe('hex scanning', () => {
 
   test('reports hex literals outside allowed files', () => {
     const violations = scanHexLiterals([
-      { path: 'template/src/components/Foo.svelte', content: '.foo { color: #D97757; }' }
+      { path: 'template/src/components/Foo.tsx', content: '.foo { color: #D97757; }' }
     ]);
 
     expect(violations).toEqual([
       {
-        path: 'template/src/components/Foo.svelte',
+        path: 'template/src/components/Foo.tsx',
         line: 1,
         value: '#D97757'
       }
@@ -122,7 +122,6 @@ describe('source file classification', () => {
   test('classifies React and framework source extensions', () => {
     expect(isSourceFile('src/components/HoloCard.tsx')).toBe(true);
     expect(isSourceFile('src/components/HoloCard.jsx')).toBe(true);
-    expect(isSourceFile('src/components/HoloCard.svelte')).toBe(true);
     expect(isSourceFile('src/styles/global.css')).toBe(true);
     expect(isSourceFile('src/lib/cards.ts')).toBe(true);
     expect(isSourceFile('src/pages/index.astro')).toBe(true);

@@ -4,13 +4,13 @@
     "name": "baozzz1"
   },
   "description": "Skills for turning project docs into routed bilingual interactive sites.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "plugins": [
     {
       "name": "interactive-showcase-site",
       "source": "./",
-      "description": "Select the right bilingual Astro + Svelte interactive template for a docs scenario.",
-      "version": "0.2.0",
+      "description": "Select the right bilingual Astro + React interactive template for a docs scenario.",
+      "version": "0.3.0",
       "author": {
         "name": "baozzz1"
       },
@@ -18,7 +18,7 @@
       "keywords": [
         "documentation",
         "astro",
-        "svelte",
+        "react",
         "interactive-docs",
         "explainer",
         "skills"

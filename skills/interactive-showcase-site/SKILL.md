@@ -1,6 +1,6 @@
 ---
 name: interactive-showcase-site
-description: Select and scaffold the right Astro + Svelte interactive documentation template for a project README, SDK, docs folder, concept collection, or technical narrative. Includes bilingual EN/ZH content, light/dark theme, and build verification.
+description: Select and scaffold the right Astro + React interactive documentation template for a project README, SDK, docs folder, concept collection, or technical narrative. Includes bilingual EN/ZH content, light/dark theme, and build verification.
 ---
 
 # Interactive Showcase Site
@@ -103,9 +103,11 @@ These rules apply to every template.
    stripe callouts, Tailwind utility drift, system fonts, or SVG illustration
    slop. C's opt-in `holo` mode is the single sanctioned high-sheen exception.
 7. **Static only.** Astro SSG, no backend, no auth, no runtime fetch.
-8. **CSS-orphan discipline.** Every interactive Svelte component used from MDX
-   or island content must be side-effect imported in the page entry, or Astro 6
-   + Svelte 5 can emit unlinked scoped CSS in production.
+8. **CSS aggregation discipline.** Every component's styles live in
+   `src/styles/components/<name>.css` and must be `@import`ed by the template's
+   `src/styles/site.css` (which `BaseLayout` imports once). This keeps all CSS on
+   a page-level static import path so it can never orphan into an island-only
+   chunk. Component markup carries plain `className`s; no scoped styles.
 9. **`.gitignore` ships and stays correct.** Keep exclusions for `node_modules/`,
    `dist/`, `.astro/`, `.env*`, `.DS_Store`, `log/`, `*.log`, and hosting
    metadata. Extend it when deploy tools create new generated directories.
@@ -140,13 +142,8 @@ bun run typecheck
 bun run build
 ```
 
-For skill-template development inside this repo, also run:
-
-```shell
-bun ../../scripts/check-svelte-css.mjs .
-```
-
-from the template directory.
+`typecheck` runs `astro check`, which type-checks the `.tsx` islands as well as
+the `.astro` pages.
 
 ## Shared Template Development Notes
 
@@ -178,8 +175,7 @@ for t in explainer scrollytelling cards wiki; do
   (cd "skills/interactive-showcase-site/templates/$t" && \
     bun install --frozen-lockfile && \
     bun run typecheck && \
-    bun run build && \
-    bun ../../scripts/check-svelte-css.mjs .)
+    bun run build)
 done
 claude plugin validate .
 claude plugin validate .claude-plugin/plugin.json
@@ -193,6 +189,6 @@ and a Vite chunk-size warning from Mermaid-heavy builds.
 
 - `engineering-artifact-design`: source visual language and anti-slop rules.
 - Astro content collections: https://docs.astro.build/en/guides/content-collections/
-- Svelte runes: https://svelte.dev/docs/svelte/$state
+- React hooks: https://react.dev/reference/react/hooks
 - Mermaid flowcharts: https://mermaid.js.org/syntax/flowchart.html
-- Svelte Flow: https://svelteflow.dev/
+- React Flow (@xyflow/react): https://reactflow.dev/

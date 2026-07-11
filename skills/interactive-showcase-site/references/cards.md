@@ -25,7 +25,7 @@ Agents may edit:
 - `src/i18n/strings.ts` for UI labels, with both EN and ZH filled
 - `public/favicon.svg` only when the source project has a real mark
 
-Treat `HoloCardGrid.svelte`, `HoloCard.svelte`, styles, config, package
+Treat `HoloCardGrid.tsx`, `HoloCard.tsx`, styles, config, package
 metadata, and lockfiles as template-level contracts unless the user is
 explicitly upgrading the skill.
 
@@ -34,9 +34,7 @@ explicitly upgrading the skill.
 The page owns the card grid island:
 
 ```astro
-import HoloCardGrid from '@/components/HoloCardGrid.svelte';
-import '@/components/HoloCardGrid.svelte';
-import '@/components/HoloCard.svelte';
+import HoloCardGrid from '@/components/HoloCardGrid';
 ```
 
 Hydrate with:
@@ -96,7 +94,6 @@ Run:
 
 ```shell
 bun run typecheck && bun run build
-bun ../../scripts/check-svelte-css.mjs .
 ```
 
 Then preview built output and verify:

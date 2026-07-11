@@ -5,7 +5,7 @@
  * defined here. No component is allowed to declare a hex literal.
  *
  * Theme = system preference, overridable by [data-theme="light"|"dark"] on
- * <html>, persisted to localStorage by ThemeToggle.svelte.
+ * <html>, persisted to localStorage by ThemeToggle.
  *
  * Palette is lifted from `engineering-artifact-design` (the warm editorial
  * sibling skill) and aligns with Anthropic Claude's `#D97757` clay accent.

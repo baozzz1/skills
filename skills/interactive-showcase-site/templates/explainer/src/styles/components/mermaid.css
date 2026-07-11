@@ -1,11 +1,9 @@
-/* Mermaid — extracted from the former scoped <style>. Duplicated verbatim in
-   explainer and wiki (checkDuplicatedComponents guards the pair). Every
-   non-root selector is namespaced under .mermaid-shell. The former
-   `.canvas :global(...)` selectors targeted mermaid-injected SVG nodes (which
-   carried no Svelte scope hash); the :global() wrapper is dropped because this
-   file is already global, and the descendant chain
-   `.mermaid-shell .canvas <injected>` reaches them. @keyframes mm-spin keeps its
-   name — the mm- prefix already namespaces it. */
+/* Mermaid — component styles. Duplicated verbatim in explainer and wiki
+   (checkDuplicatedComponents guards the pair). Every non-root selector is
+   namespaced under .mermaid-shell. Selectors that target mermaid-injected SVG
+   nodes are plain descendant selectors (`.mermaid-shell .canvas <injected>`),
+   since this global stylesheet reaches them directly. @keyframes mm-spin keeps
+   its name — the mm- prefix already namespaces it. */
 .mermaid-shell {
   background: var(--paper);
   border: 1.5px solid var(--gray-300);

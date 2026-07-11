@@ -1,9 +1,8 @@
-/* FlowGraph — extracted from the former scoped <style>. Non-root selectors
-   namespaced under .graph-card. The former `.flow :global(.svelte-flow__*)`
-   selectors targeted the flow library's injected DOM; the :global() wrapper is
-   dropped (this file is already global) and the class prefix is now
-   .react-flow__ (@xyflow/react). Bare `ol`, `button`, `span`, `h2` inside
-   .text-equivalent / .details are namespaced. */
+/* FlowGraph — component styles. Non-root selectors namespaced under
+   .graph-card. The .react-flow__* selectors target @xyflow/react's injected
+   DOM as plain descendant selectors (`.graph-card .flow .react-flow__...`),
+   since this global stylesheet reaches them directly. Bare `ol`, `button`,
+   `span`, `h2` inside .text-equivalent / .details are namespaced. */
 .graph-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
