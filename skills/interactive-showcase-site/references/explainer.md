@@ -19,7 +19,11 @@ Agents may edit:
 - `src/content/sections/zh/*.mdx`
 - `src/pages/index.astro` hero literals only: `siteTitleEn`, `siteTitleZh`,
   `faviconLetter`, `heroPropsEn`, `heroPropsZh`
-- `src/components/*Diagram.svelte` only for per-section custom visualizations
+- `src/components/*Diagram.tsx` only for per-section custom visualizations —
+  React function components. Use hooks (`useState`/`useEffect`/`useRef`); read
+  language via `useLang()` from `@/i18n/lang`. Put any styles in
+  `src/styles/components/<name>.css` and `@import` them from `site.css`; use
+  plain `className`s, never inline hex (only `var(--token)` colors).
 - `src/i18n/strings.ts` only when adding UI labels, with both EN and ZH filled
 - `public/favicon.svg` only when the source project has a real mark
 
@@ -51,10 +55,10 @@ structure. `heroKind` is one of `plain`, `lifecycle`, `mermaid`, `tabs`, or
 MDX sections may import only these components:
 
 ```mdx
-import Lifecycle from '@/components/Lifecycle.svelte';
-import Mermaid from '@/components/Mermaid.svelte';
-import Tabs from '@/components/Tabs.svelte';
-import CodeBlock from '@/components/CodeBlock.svelte';
+import Lifecycle from '@/components/Lifecycle';
+import Mermaid from '@/components/Mermaid';
+import Tabs from '@/components/Tabs';
+import CodeBlock from '@/components/CodeBlock';
 import Callout from '@/components/Callout.astro';
 import Chip from '@/components/Chip.astro';
 ```
@@ -70,14 +74,9 @@ Use hydration directives exactly as follows:
 | `Callout` | none |
 | `Chip` | none |
 
-The page entry must side-effect import the interactive Svelte MDX components:
-
-```astro
-import '@/components/Lifecycle.svelte';
-import '@/components/Mermaid.svelte';
-import '@/components/Tabs.svelte';
-import '@/components/CodeBlock.svelte';
-```
+Component styles are aggregated by `src/styles/site.css` (imported once by
+`BaseLayout`), so no per-page side-effect imports are needed — the CSS is always
+on the page's static import path.
 
 ## Patterns
 
@@ -156,7 +155,6 @@ Run first:
 
 ```shell
 bun run typecheck && bun run build
-bun ../../scripts/check-svelte-css.mjs .
 ```
 
 Then preview the built output and verify:

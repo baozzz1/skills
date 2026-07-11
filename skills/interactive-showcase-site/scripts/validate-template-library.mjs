@@ -15,8 +15,8 @@ import {
 } from './lib/template-library-contracts.mjs';
 
 // Components duplicated verbatim across templates with no kernel-sync guard.
-// Extension-agnostic so this survives the Svelte -> React port: only the
-// filename changes here.
+// Extension is resolved at runtime so the filename is the only thing that
+// changes here.
 const DUPLICATED_COMPONENTS = [
   { file: 'CodeBlock', a: 'explainer', b: 'wiki' },
   { file: 'Mermaid', a: 'explainer', b: 'wiki' }
@@ -169,7 +169,7 @@ async function checkStylesAggregated() {
 async function checkDuplicatedComponents() {
   const componentsDir = (archetype) => path.join(skillRoot, 'templates', archetype, 'src/components');
   const resolve = (archetype, file) => {
-    for (const ext of ['.tsx', '.jsx', '.svelte']) {
+    for (const ext of ['.tsx', '.jsx']) {
       const candidate = path.join(componentsDir(archetype), `${file}${ext}`);
       if (existsSync(candidate)) return candidate;
     }

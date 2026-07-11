@@ -23,7 +23,7 @@ Agents may edit:
 - `src/i18n/strings.ts` for UI labels, with both EN and ZH filled
 - `public/favicon.svg` only when the source project has a real mark
 
-Treat `StickyStage.svelte`, styles, config, package metadata, and lockfiles as
+Treat `StickyStage.tsx`, styles, config, package metadata, and lockfiles as
 template-level contracts unless the user is explicitly upgrading the skill.
 
 ## Authoring API
@@ -31,8 +31,7 @@ template-level contracts unless the user is explicitly upgrading the skill.
 The page owns one island:
 
 ```astro
-import StickyStage from '@/components/StickyStage.svelte';
-import '@/components/StickyStage.svelte';
+import StickyStage from '@/components/StickyStage';
 ```
 
 Hydrate with:
@@ -87,7 +86,6 @@ Run:
 
 ```shell
 bun run typecheck && bun run build
-bun ../../scripts/check-svelte-css.mjs .
 ```
 
 Then preview built output and verify:

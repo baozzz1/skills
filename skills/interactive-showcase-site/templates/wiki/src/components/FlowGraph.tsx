@@ -1,9 +1,8 @@
 /**
- * FlowGraph — interactive concept graph via @xyflow/react (the upstream
- * implementation; @xyflow/svelte was the port). Read-only: nodes are static and
- * selection only recolors, so nodes/edges are passed as controlled props with
- * no change handlers. Styles: src/styles/components/flow-graph.css (the former
- * .svelte-flow__ selectors are now .react-flow__).
+ * FlowGraph — interactive concept graph via @xyflow/react. Read-only: nodes are
+ * static and selection only recolors, so nodes/edges are passed as controlled
+ * props with no change handlers. Styles: src/styles/components/flow-graph.css
+ * (its overrides target .react-flow__* classes).
  */
 import { useEffect, useMemo, useState } from 'react';
 import type { KeyboardEvent } from 'react';

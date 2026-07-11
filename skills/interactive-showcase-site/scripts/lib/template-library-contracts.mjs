@@ -55,7 +55,7 @@ export function compareKernelEntries(entries) {
     }));
 }
 
-const SOURCE_FILE_RE = /\.(astro|svelte|tsx|jsx|css|ts|js|md|mdx)$/;
+const SOURCE_FILE_RE = /\.(astro|tsx|jsx|css|ts|js|md|mdx)$/;
 
 // Which files the hex-discipline scan collects. Exported (not buried in the
 // validator) so the tsx/jsx inclusion is unit-tested: without it, hard-coded
@@ -72,8 +72,8 @@ export function extractCssImports(content) {
 
 // Component CSS is only orphan-proof if a page-level stylesheet @imports it.
 // Given site.css content and the component stylesheet basenames present on
-// disk, return the basenames site.css forgot to import. Replaces the whole
-// svelte-<hash> orphan-detection tooling class.
+// disk, return the basenames site.css forgot to import. This replaced the
+// former scoped-CSS-hash orphan detector, which no longer applies to plain CSS.
 export function unaggregatedComponentStyles(siteCssContent, componentCssBasenames) {
   const imported = new Set(
     [...extractCssImports(siteCssContent)].map((target) => target.split('/').pop())

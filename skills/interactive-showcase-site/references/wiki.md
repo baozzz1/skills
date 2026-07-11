@@ -10,7 +10,7 @@ systems, architecture maps, or "which one do I pick" reference guides.
 - Sidebar category tree for global navigation.
 - Main concept page with four-question prose structure.
 - On-this-page rail for headings.
-- Each concept page includes an interactive `@xyflow/svelte` graph.
+- Each concept page includes an interactive `@xyflow/react` graph.
 - Prev/next pager follows a route manifest.
 
 D is the only multi-page archetype. It requires explicit user approval before
@@ -36,12 +36,9 @@ the skill.
 The concept route owns these interactive islands:
 
 ```astro
-import Sidebar from '@/components/Sidebar.svelte';
-import OnThisPage from '@/components/OnThisPage.svelte';
-import FlowGraph from '@/components/FlowGraph.svelte';
-import '@/components/Sidebar.svelte';
-import '@/components/OnThisPage.svelte';
-import '@/components/FlowGraph.svelte';
+import Sidebar from '@/components/Sidebar';
+import OnThisPage from '@/components/OnThisPage';
+import FlowGraph from '@/components/FlowGraph';
 ```
 
 Hydrate with:
@@ -99,7 +96,7 @@ Each concept page uses the same four-question prose shape:
 - Animated playback honors reduced motion and never auto-loops.
 - Node color coding must have a non-color cue.
 - Static Mermaid remains available for authored set-piece diagrams, but the
-  concept graph is `FlowGraph.svelte`.
+  concept graph is `FlowGraph.tsx`.
 
 ## Verification Checklist
 
@@ -107,7 +104,6 @@ Run:
 
 ```shell
 bun run typecheck && bun run build
-bun ../../scripts/check-svelte-css.mjs .
 ```
 
 Then preview built output and verify:

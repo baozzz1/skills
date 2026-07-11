@@ -4,7 +4,7 @@
    (unscoped) CSS would win on specificity over a bare .card { transform:
    perspective() } at (0,1,0) and flatten the holographic tilt. The rename is
    the only order-independent fix. All child selectors are namespaced under
-   .holo-card to reproduce Svelte's former scope isolation. */
+   .holo-card for per-component isolation. */
 .holo-card {
   --pointer-x: 50%;
   --pointer-y: 50%;

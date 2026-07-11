@@ -9,7 +9,7 @@ This repository packages one Agent Skill, `interactive-showcase-site`, for Claud
 - `skills/interactive-showcase-site/SKILL.md`: router, shared contract, and scaffold workflow.
 - `skills/interactive-showcase-site/references/`: per-archetype authoring APIs and checklists.
 - `skills/interactive-showcase-site/shared/kernel/`: source of truth for synced token/theme/lang/layout files.
-- `skills/interactive-showcase-site/templates/{explainer,scrollytelling,cards,wiki}/`: complete, independently buildable Astro + Svelte scaffolds.
+- `skills/interactive-showcase-site/templates/{explainer,scrollytelling,cards,wiki}/`: complete, independently buildable Astro + React scaffolds.
 - `skills/interactive-showcase-site/scripts/`: kernel sync and validation scripts.
 - `README.md` and `README.zh.md`: human-facing docs only. Keep them to two sections: intent and installation.
 
@@ -36,33 +36,24 @@ for t in explainer scrollytelling cards wiki; do
   (cd "skills/interactive-showcase-site/templates/$t" && \
     bun install --frozen-lockfile && \
     bun run typecheck && \
-    bun run build && \
-    bun ../../scripts/check-svelte-css.mjs .)
+    bun run build)
 done
 claude plugin validate .
 claude plugin validate .claude-plugin/plugin.json
 claude plugin validate .claude-plugin/marketplace.json
 ```
 
-Expected non-blocking output: Astro/Zod deprecation hints from `astro check`, a Vite chunk-size warning from Mermaid-heavy explainer builds, and Svelte Flow's unused `handleConnectionChange` warning in the wiki build.
+Expected non-blocking output: Astro/Zod deprecation hints from `astro check` and a Vite chunk-size warning from Mermaid-heavy explainer builds.
 
-## Known Gotcha: Svelte CSS Orphaned In Islands
+Measured production JS (gzip, `dist/**/*.js`): cards ≈ 63 KB, scrollytelling ≈ 63 KB, wiki ≈ 122 KB (react-dom + @xyflow/react), explainer ≈ 1 MB (Mermaid-dominated). React's react-dom client is ≈ 58 KB gzip of the fixed baseline; it is non-blocking (Astro server-renders all content — islands only add interactivity).
 
-Astro 6 + Svelte 5 can put scoped CSS for Svelte components used from MDX or hydrated islands into a separate CSS chunk that production HTML does not link. Dev mode can look correct while `bun run build && bun run preview` renders unstyled components.
+## CSS Delivery: Aggregated, Not Scoped
 
-Every interactive Svelte component used from MDX or a route must be side-effect imported in that route entry:
+React has no scoped styles, so every component's CSS lives in `src/styles/components/<name>.css` and is `@import`ed by the template's `src/styles/site.css`, which `BaseLayout` imports once. Because component CSS is always reachable through a page-level static import, it can never orphan into an island-only chunk — the failure mode that the deleted `check-svelte-css.mjs` used to guard is now structurally impossible. `validate-template-library.mjs`'s `checkStylesAggregated` asserts every component stylesheet is imported by `site.css`.
 
-```astro
-import '@/components/SomeIsland.svelte';
-```
-
-After `bun run build`, run:
-
-```shell
-bun ../../scripts/check-svelte-css.mjs .
-```
-
-from the template directory. The check must pass for every generated route; wiki has multiple HTML routes.
+Two rules keep this working:
+- Selectors inside a component stylesheet are namespaced under the component's root class (Svelte's scope hash is gone); bare element selectors (`svg`, `pre`, `a`) would otherwise leak page-wide.
+- `global.css`'s `@media print` rule and MDX descendant rules target components by **bare class name**, so component markup keeps plain `className`s (never CSS Modules, which would rename them and silently break print styles).
 
 ## Preview Screenshots
 

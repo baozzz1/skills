@@ -1,9 +1,8 @@
 /* StickyStage — extracted from the former scoped <style>.
-   Every non-root selector is namespaced under .story to reproduce Svelte's
-   scope isolation. Two selectors were BARE element selectors (svg, marker path)
-   that would style every SVG on the page if left unscoped. @keyframes node-in /
-   edge-in are renamed sticky-node-in / sticky-edge-in — Svelte localized these
-   names and that protection is gone. */
+   Every non-root selector is namespaced under .story for per-component
+   isolation. Two were BARE element selectors (svg, marker path) that would
+   style every SVG on the page if left unscoped. @keyframes node-in / edge-in
+   are renamed sticky-node-in / sticky-edge-in to keep their names unique. */
 .story {
   padding: 0 0 80px;
 }

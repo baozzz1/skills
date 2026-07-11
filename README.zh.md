@@ -1,6 +1,6 @@
 # Interactive Showcase Site
 
-> 把 README、SDK、文档目录、时间线、卡片集合或概念图谱路由到合适的中英双语 Astro + Svelte 交互模板。
+> 把 README、SDK、文档目录、时间线、卡片集合或概念图谱路由到合适的中英双语 Astro + React 交互模板。
 
 [English](README.md) · [在线预览 ↗](https://baozzz1.github.io/skills/)
 
