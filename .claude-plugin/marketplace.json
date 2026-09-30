@@ -4,13 +4,13 @@
     "name": "baozzz1"
   },
   "description": "Skills for turning project docs into routed bilingual interactive sites.",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "plugins": [
     {
       "name": "interactive-showcase-site",
       "source": "./",
       "description": "Select the right bilingual Astro + React interactive template for a docs scenario.",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "author": {
         "name": "baozzz1"
       },

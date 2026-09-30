@@ -1,7 +1,7 @@
 {
   "name": "interactive-showcase-site",
   "description": "Select the right bilingual Astro + React interactive template for a docs scenario.",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "author": {
     "name": "baozzz1"
   },
